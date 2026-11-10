@@ -5,6 +5,10 @@ recording limit of about 60 minutes.
 
 This project is unofficial and is not affiliated with OM Digital Solutions or Olympus.
 
+Free to use. If it saved you some time or you just like the looks, you can
+[buy me a coffee on Ko-fi](https://ko-fi.com/meghnus). Donations are optional and change nothing about what
+you get.
+
 ## Quick start
 
 1. Download the release from the [Releases page](https://github.com/Meghnus/om10mi-mods/releases):
@@ -137,11 +141,6 @@ approximate camera look (colour matrix plus tone curve). The camera has no 3D-LU
 approximation: close for gentle film-style LUTs, weaker for extreme ones. You pick which look slot it replaces,
 preview the result by camera simulation on the PC first, then receive a new firmware file to install. Planned
 after the colour wheel.
-
-## Support
-
-Free to use. If it saved you some time or you just like the looks, you can buy me a coffee on
-[Ko-fi](https://ko-fi.com/meghnus). Donations are optional and change nothing about what you get.
 
 ## Credits
 
