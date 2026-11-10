@@ -1,8 +1,23 @@
 # Installing
 
+## Quick start
+
+1. Download the release from the [Releases page](https://github.com/Meghnus/om10mi-mods/releases):
+   `om10mi-build.exe` (Windows, no Python needed) or `om10mi-mods-v56.zip` (any system, needs Python 3.10+).
+2. Run it: double-click `om10mi-build.exe`, or unzip and double-click `om10mi-build.bat` (Windows) or
+   `om10mi-build.command` (macOS), or run `./om10mi-build.sh` (Linux).
+3. Read and accept the OM Digital Solutions licence it shows. The builder downloads the official firmware 1.4
+   itself; nothing from OM is stored in this repository.
+4. When it asks, enter the SD card's drive letter to copy the file to the card, or copy the folder
+   `out/DCOLYMP` to the card yourself.
+5. Camera off, card in, **hold OK and switch on**, and wait until the AF lamp blinks rapidly. Details below.
+
+A copy of the official firmware, for going back, is written to `out/RESTORE/DCOLYMP`.
+
 ## Requirements
 
-- Python 3.10 or newer (standard library only; nothing to install).
+- Python 3.10 or newer (standard library only; nothing to install), unless you use `om10mi-build.exe` on
+  Windows, which needs no Python.
 - An internet connection to download the official firmware (about 67 MB), or an official v1.4 file you already
   have.
 - An SD card, and a **fully charged** camera battery.
@@ -10,7 +25,13 @@
 
 ## 1. Build
 
-Open a terminal in this folder.
+The easy way is a launcher; each one runs the same builder and asks whether to copy to the SD card at the end:
+
+- Windows: double-click `om10mi-build.exe` (no Python needed), or `om10mi-build.bat` (needs Python 3.10+).
+- macOS: double-click `om10mi-build.command`.
+- Linux: run `./om10mi-build.sh`.
+
+Or open a terminal in this folder and run:
 
 ```
 python om10mi.py build
@@ -27,6 +48,9 @@ The builder will:
    - `out/RESTORE/DCOLYMP/E1139999.BIN`: the official v1.4, to go back.
 
 Already have the official file? `python om10mi.py build --stock OLY_E_113_1400_0000_0000.BIN`.
+Want the builder to put the file on the card for you? Add `--sd E:` (your card's drive letter, or its mount
+point). It copies only `DCOLYMP/E1139999.BIN`, refuses a drive that has no `DCIM` folder, never changes anything
+else on the card, and asks you to type `yes` first.
 Only want to download and check it? `python om10mi.py fetch`. Want to check a file?
 `python om10mi.py verify FILE.BIN`.
 

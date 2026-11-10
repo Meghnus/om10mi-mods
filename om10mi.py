@@ -8,11 +8,13 @@ copy that is checked byte for byte against the published result hash.
 
     python om10mi.py build                    download the official file, then build
     python om10mi.py build --stock FILE.BIN   use a copy you already have
+    python om10mi.py build --sd E:            also copy the result to the SD card in drive E:
     python om10mi.py fetch                    only download and verify the official file
     python om10mi.py verify FILE.BIN          check a firmware file (structure, checksums, hash)
 
 Needs Python 3.10 or newer and nothing else. It never talks to the camera and
-never writes anywhere except the output folder (default: ./out).
+never writes anywhere except the output folder (default: ./out) and, only when you ask
+for it, DCOLYMP/E1139999.BIN on the SD card you name.
 
 Copyright 2026 Meghnus. This file is licensed under the Apache License 2.0 (see LICENSE).
 The patch data in patch/looks56.json is licensed separately (CC BY-NC-SA 4.0, see LICENSE-DATA).
@@ -25,6 +27,7 @@ import html
 import json
 import os
 import re
+import shutil
 import struct
 import sys
 import time
@@ -35,7 +38,10 @@ import urllib.request
 ALLOWED_HOSTS = ("om-digitalsolutions.net",)   # hosts seen in the real reply: fw01. and dl01.
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-PATCH_FILE = os.path.join(HERE, "patch", "looks56.json")
+FROZEN = bool(getattr(sys, "frozen", False))          # true in the packaged Windows exe
+APP_DIR = os.path.dirname(sys.executable) if FROZEN else HERE   # where "out" lives by default
+RES_DIR = getattr(sys, "_MEIPASS", HERE)              # where patch/ lives
+PATCH_FILE = os.path.join(RES_DIR, "patch", "looks56.json")
 
 MODEL_ID = 0x1130                      # E-M10 Mark I; the builder refuses anything else
 STOCK_NAME = "OLY_E_113_1400_0000_0000.BIN"
@@ -334,6 +340,8 @@ def obtain_stock(args, patch):
     """Return the bytes of the official image, downloading it when needed."""
     if args.stock:
         path = args.stock
+        if not os.path.isfile(path):
+            raise BuildError("file not found: %s" % path)
     else:
         path = os.path.join(args.out, "official", STOCK_NAME)
         if not os.path.exists(path):
@@ -381,6 +389,59 @@ def cmd_fetch(args):
     return 0
 
 
+def _sd_root(text):
+    t = text.strip().strip('"')
+    if re.fullmatch(r"[A-Za-z]:?", t):
+        t = t[0].upper() + ":" + os.sep
+    return t
+
+
+def copy_to_sd(image, sd, assume_yes):
+    """Put DCOLYMP/E1139999.BIN on a camera card. The only things ever written are that one file
+    (through a temporary name next to it) and the DCOLYMP folder if it is missing."""
+    root = _sd_root(sd)
+    if not os.path.isdir(root):
+        raise BuildError("%s is not an available drive or folder" % sd)
+    dcim = [n for n in os.listdir(root) if n.lower() == "dcim" and os.path.isdir(os.path.join(root, n))]
+    if not dcim:
+        raise BuildError("%s does not look like a camera card (no DCIM folder); nothing copied" % root)
+    folder = os.path.join(root, "DCOLYMP")
+    if os.path.exists(folder) and not os.path.isdir(folder):
+        raise BuildError("%s exists and is not a folder; nothing copied" % folder)
+    target = os.path.join(folder, CARD_NAME)
+    replacing = os.path.isfile(target)
+    if os.path.exists(target) and not replacing:
+        raise BuildError("%s exists and is not a file; nothing copied" % target)
+    free = shutil.disk_usage(root).free + (os.path.getsize(target) if replacing else 0)
+    if free < len(image) + (1 << 20):
+        raise BuildError("not enough free space on %s (%d MB needed)" % (root, len(image) >> 20))
+    print()
+    print("SD card: %s (DCIM found)" % root)
+    print("  will %s  %s  (%d MB)" % ("REPLACE" if replacing else "write", target, len(image) >> 20))
+    print("  nothing else on the card is touched")
+    if not assume_yes:
+        try:
+            answer = input("Type yes to copy: ").strip().lower()
+        except EOFError:
+            answer = ""
+        if answer != "yes":
+            print("not copied")
+            return
+    os.makedirs(folder, exist_ok=True)
+    tmp = target + ".part"
+    try:
+        with open(tmp, "wb") as f:
+            f.write(image)
+        with open(tmp, "rb") as f:
+            if sha1_hex(f.read()) != sha1_hex(image):
+                raise BuildError("the copy on the card does not match; it was removed")
+        os.replace(tmp, target)
+    finally:
+        if os.path.exists(tmp):
+            os.remove(tmp)
+    print("copied. Eject the card safely, then follow the steps in INSTALL.md (hold OK while switching on).")
+
+
 def cmd_build(args):
     patch = load_patch()
     stock = obtain_stock(args, patch)
@@ -408,6 +469,14 @@ def cmd_build(args):
     print("done. sha1 %s matches the published look pack." % sha)
     print("  to flash   : copy  %s  to the card" % os.path.join(args.out, "DCOLYMP"))
     print("  to go back : copy  %s  instead (official 1.4)" % os.path.join(args.out, "RESTORE", "DCOLYMP"))
+    sd = args.sd
+    if not sd and args.ask_sd:
+        try:
+            sd = input("\nCopy to SD card now? Enter the drive letter (or mount path), or leave empty to skip: ")
+        except EOFError:
+            sd = ""
+    if sd and sd.strip():
+        copy_to_sd(image, sd, args.yes)
     return 0
 
 
@@ -429,33 +498,48 @@ def cmd_verify(args):
 
 
 def main(argv):
+    interactive = not argv      # started by double-click (the packaged exe): build, offer the SD copy, wait
+    if interactive:
+        argv = ["build", "--ask-sd"]
     ap = argparse.ArgumentParser(prog="om10mi", description=__doc__.split("\n\n")[0])
     sub = ap.add_subparsers(dest="cmd", required=True)
     for name, fn, text in (("build", cmd_build, "build the card image"),
                            ("fetch", cmd_fetch, "download and check the official firmware only")):
         s = sub.add_parser(name, help=text)
         s.add_argument("--stock", metavar="FILE", help="official E113 v1.4 .BIN you already have")
-        s.add_argument("--out", default="out", metavar="DIR", help="output folder (default: out)")
+        s.add_argument("--out", default=os.path.join(APP_DIR, "out"), metavar="DIR",
+                       help="output folder (default: out, next to this program)")
         s.add_argument("--accept-license", action="store_true",
                        help="accept the OM Digital Solutions firmware licence without asking")
+        if name == "build":
+            s.add_argument("--sd", metavar="DRIVE", help="also copy the result to this SD card "
+                           "(drive letter such as E: or a mount point; must contain a DCIM folder)")
+            s.add_argument("--ask-sd", action="store_true", help="ask whether to copy to an SD card")
+            s.add_argument("--yes", action="store_true", help="do not ask for confirmation before the SD copy")
         s.set_defaults(fn=fn)
     s = sub.add_parser("verify", help="check a firmware file")
     s.add_argument("file")
     s.set_defaults(fn=cmd_verify)
     args = ap.parse_args(argv)
     try:
-        return args.fn(args)
+        code = args.fn(args)
     except BuildError as e:
         print("error:", e, file=sys.stderr)
-        return 2
+        code = 2
     except KeyboardInterrupt:
         print("interrupted; nothing written", file=sys.stderr)
-        return 130
+        code = 130
     except Exception as e:  # anything unforeseen: short message, no traceback, exit 2
         print("unexpected error (%s: %s). Nothing was written to the output folders.\n"
               "Please report this at https://github.com/Meghnus/om10mi-mods/issues with your Python "
               "version and the command you ran." % (type(e).__name__, e), file=sys.stderr)
-        return 2
+        code = 2
+    if interactive:
+        try:
+            input("\nPress Enter to close this window ...")
+        except (EOFError, KeyboardInterrupt):
+            pass
+    return code
 
 
 if __name__ == "__main__":

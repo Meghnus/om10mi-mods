@@ -5,6 +5,23 @@ recording limit of about 60 minutes.
 
 This project is unofficial and is not affiliated with OM Digital Solutions or Olympus.
 
+## Quick start
+
+1. Download the release from the [Releases page](https://github.com/Meghnus/om10mi-mods/releases):
+   `om10mi-build.exe` (Windows, no Python needed) or `om10mi-mods-v56.zip` (any system, needs Python 3.10+).
+2. Run it: double-click `om10mi-build.exe`, or unzip and double-click `om10mi-build.bat` (Windows) or
+   `om10mi-build.command` (macOS), or run `./om10mi-build.sh` (Linux).
+3. Read and accept the OM Digital Solutions licence it shows. The builder downloads the official firmware 1.4
+   itself; nothing from OM is stored in this repository.
+4. When it asks, enter the SD card's drive letter to copy the file to the card, or copy the folder
+   `out/DCOLYMP` to the card yourself.
+5. Camera off, card in, **hold OK and switch on**, and wait until the AF lamp blinks rapidly
+   (full steps in [INSTALL.md](INSTALL.md)).
+
+A copy of the official firmware, for going back, is written to `out/RESTORE/DCOLYMP`. The Windows exe is
+unsigned, so Windows may show a SmartScreen warning; if you prefer, use the zip and the Python launcher, which
+run the same `om10mi.py`.
+
 ## What this is
 
 This repository contains **no firmware**. It holds a builder (`om10mi.py`) and a list of edits
@@ -68,15 +85,6 @@ Looks shown, in order: Natural (camera), Eterna, Nostalgic Neg, Ektar 100, Class
 
 These are only a handful of looks; the others (for example Portra 400, Kodachrome 64 and Gold 200) are not
 shown yet.
-
-## Quick start
-
-```
-python om10mi.py build
-```
-
-Then copy the folder `out/DCOLYMP` to an SD card and follow [INSTALL.md](INSTALL.md). A copy of the official
-firmware, for going back, is written to `out/RESTORE/DCOLYMP`.
 
 ## Warnings
 
