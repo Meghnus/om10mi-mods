@@ -1,0 +1,7 @@
+*.BIN
+*.bin
+*.dec
+*.part
+out/
+__pycache__/
+*.pyc

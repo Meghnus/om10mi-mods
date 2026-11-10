@@ -1,0 +1,76 @@
+om10mi-mods
+Copyright 2026 Meghnus
+
+Licences
+--------
+* Code (om10mi.py) and documentation: Apache License, Version 2.0 (see LICENSE).
+* Data (patch/looks56.json and any other look data): Creative Commons
+  Attribution-NonCommercial-ShareAlike 4.0 International (see LICENSE-DATA). Attribution: "om10mi-mods,
+  Meghnus, https://github.com/Meghnus/om10mi-mods", together with the references listed below. The data is a
+  set of numbers fitted to those references, which is why it is licensed non-commercially.
+* Sample pictures (docs/samples): (c) 2026 Meghnus. All rights reserved; viewing only, no reuse. They are not
+  covered by either licence above.
+
+THIS PROJECT IS UNOFFICIAL. It is not made, endorsed or supported by OM Digital Solutions Corporation or
+Olympus. "Olympus", "OM System", "OM-D" and the film and camera names used here (Portra, Kodachrome, Ektar,
+Gold, Fujifilm and others) are trademarks of their owners and are used only to identify things.
+
+Firmware
+--------
+The camera firmware is the property of OM Digital Solutions Corporation and is distributed by them under their
+own licence. This repository contains no firmware bytes: no firmware file, no decoded partitions, no
+disassembly, no copied tables, strings or icons. patch/looks56.json holds (a) our own new bytes, (b) build-time
+instructions that copy ranges of the official image you download yourself, and (c) SHA-256 hashes of the
+original ranges, used only to check that the right firmware is being patched. Reference LUT files from the
+projects below are not included either; the look data we ship is a set of numbers (colour matrices and tone
+curves) that we fitted ourselves to match them.
+
+Acknowledgements and references
+--------------------------------
+Nothing below is bundled. "Knowledge only" means we read it and wrote our own code and data.
+
+* cakelesscoder/caduceus-ep7 - https://github.com/cakelesscoder/caduceus-ep7 - Apache-2.0.
+  Firmware mods for the Olympus PEN E-P7. Design reference for the on-camera look editor, HSL handling and
+  the ends of the tone curve. Knowledge only; no code or data copied.
+
+* abpy/FujifilmCameraProfiles - https://github.com/abpy/FujifilmCameraProfiles - Creative Commons
+  BY-NC-SA 4.0 (per its README). Source of the Fujifilm film-simulation LUTs.
+  TingfengLuo/Camera-Profile-for-Fujifilm-Film-Simulation -
+  https://github.com/TingfengLuo/Camera-Profile-for-Fujifilm-Film-Simulation - repackages those LUTs as
+  Adobe Camera Raw profiles; GitHub shows no licence file for it. Both were used as colour targets for the
+  Fujifilm-style looks. Only fitted numbers are shipped; no LUT, profile or XMP file.
+
+* spektrafilm, by Andrea Volpato - https://github.com/andreavolpato/spektrafilm - code GPL-3.0; film
+  profiles and LUTs CC BY-SA 4.0 with an author's request not to resell them. We used the LUTs bundled with
+  RapidRAW (https://github.com/CyberTimon/RapidRAW, AGPL-3.0) as colour targets for Portra 400, Ektar 100 and
+  Gold 200. No code copied; no LUT shipped.
+
+* HaldCLUT film emulations / RawTherapee Film Simulation Collection - by Pat David, Pavlov Dmitry and
+  Michael Ezra (2015) - https://rawpedia.rawtherapee.com/Film_Simulation - CC BY-SA 4.0 per its README.
+  Colour target for Kodachrome 64. No LUT shipped.
+
+* Spectral Film LUT, by Jan Lohse - https://github.com/JanLohse/spectral_film_lut - MIT.
+  A second, independent film model used as a cross-check. No code or LUT shipped.
+
+* CUBE-to-XMP - https://github.com/OwenWhw/CUBE-to-XMP (formerly published as 13489079165/CUBE-to-XMP) -
+  MIT. Method reference for reading the LUT tables stored in XMP files. Re-implemented from its description;
+  not imported or copied.
+
+* Fuji X Weekly - https://fujixweekly.com - its list of most popular recipes helped us choose which looks to
+  add. No data copied.
+
+* Jonathan Schwarzenboeck, lightsnowdev.com - documented flashing the OM-D E-M10 from a memory card
+  (DCOLYMP folder, E1139999.BIN, OK at power-on). The site is gone (HTTP 410); archived copies:
+  https://web.archive.org/web/*/lightsnowdev.com*
+
+* The anonymous community modder who published an E-M5 Mark II video-duration patch: the idea of
+  changing the recording-limit constants. The edit itself was located and made on the E-M10 Mark I image.
+
+* GNU binutils (MN10300 opcode tables, GPL) and the Linux kernel's arch/mn10300 sources: used as CPU
+  documentation to read the camera's code. Nothing from them is included.
+
+Disclaimer
+----------
+This notice is informational and does not modify either licence. It is not legal advice. The looks shipped
+in patch/looks56.json are numerical approximations fitted to the references above; if you need certainty
+about how the references' licences apply to such numbers, ask their authors.
