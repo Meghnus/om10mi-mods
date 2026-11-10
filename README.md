@@ -138,6 +138,11 @@ approximation: close for gentle film-style LUTs, weaker for extreme ones. You pi
 preview the result by camera simulation on the PC first, then receive a new firmware file to install. Planned
 after the colour wheel.
 
+## Support
+
+Free to use. If it saved you some time or you just like the looks, you can buy me a coffee on
+[Ko-fi](https://ko-fi.com/meghnus). Donations are optional and change nothing about what you get.
+
 ## Credits
 
 No code or LUT files from the projects below are included; only fitted numbers (matrices and curves) that we
