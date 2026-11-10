@@ -9,6 +9,8 @@ Free to use. If it saved you some time or you just like the looks, you can
 [buy me a coffee on Ko-fi](https://ko-fi.com/meghnus). Donations are optional and change nothing about what
 you get.
 
+[![Support me on Ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/meghnus)
+
 ## Quick start
 
 1. Download the release from the [Releases page](https://github.com/Meghnus/om10mi-mods/releases):
