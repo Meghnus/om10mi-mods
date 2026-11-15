@@ -1,0 +1,73 @@
+{
+  "format": "om10mi-look",
+  "version": 1,
+  "target": "E113",
+  "generator": {"name": "Caduceus Control Panel", "version": "example"},
+  "looks": [
+    {
+      "slot": 6,
+      "name": "Soft Teal Neg",
+      "label": "TEALNEG",
+      "base": "auto",
+      "strength": 100,
+      "notes": "Muted greens, orange-leaning reds, slightly richer cyans, lifted blacks, a little cool.",
+      "hsl": [
+        {"centre_deg": 0,   "hue_deg": 4,  "sat_pct": -10, "light_pct": 0},
+        {"centre_deg": 30,  "hue_deg": 0,  "sat_pct": -15, "light_pct": 4},
+        {"centre_deg": 60,  "hue_deg": -6, "sat_pct": -20, "light_pct": 0},
+        {"centre_deg": 90,  "hue_deg": 6,  "sat_pct": -25, "light_pct": -3},
+        {"centre_deg": 120, "hue_deg": 8,  "sat_pct": -25, "light_pct": -5},
+        {"centre_deg": 150, "hue_deg": 5,  "sat_pct": -5,  "light_pct": 0},
+        {"centre_deg": 180, "hue_deg": 0,  "sat_pct": 10,  "light_pct": 0},
+        {"centre_deg": 210, "hue_deg": 0,  "sat_pct": 5,   "light_pct": 0},
+        {"centre_deg": 240, "hue_deg": 0,  "sat_pct": 0,   "light_pct": 0},
+        {"centre_deg": 270, "hue_deg": 0,  "sat_pct": 0,   "light_pct": 0},
+        {"centre_deg": 300, "hue_deg": 0,  "sat_pct": -10, "light_pct": 0},
+        {"centre_deg": 330, "hue_deg": 3,  "sat_pct": -10, "light_pct": 0}
+      ],
+      "global": {"hue_deg": 0, "sat_pct": -8},
+      "wb": {"amber_blue": -1, "green_magenta": 0},
+      "tone": {
+        "curve": [[0, 0.03], [0.125, 0.14], [0.25, 0.26], [0.5, 0.51], [0.75, 0.76], [0.875, 0.87], [1, 0.97]]
+      },
+      "camera_settings": {"contrast": 0, "sharpness": 0, "saturation": 0},
+      "extras": {
+        "grain": "fine",
+        "effect": {"type": "bloom", "strength": 2},
+        "vignette": 1
+      }
+    },
+    {
+      "slot": 16,
+      "name": "Warm Fade",
+      "base": "Portrait",
+      "strength": 90,
+      "notes": "Warm highlights, blue-ish lifted shadows, gentle S-curve.",
+      "hsl": [
+        {"centre_deg": 0,   "hue_deg": 0, "sat_pct": 5,  "light_pct": 0},
+        {"centre_deg": 30,  "hue_deg": 0, "sat_pct": 10, "light_pct": 3},
+        {"centre_deg": 60,  "hue_deg": 0, "sat_pct": 0,  "light_pct": 0},
+        {"centre_deg": 90,  "hue_deg": 0, "sat_pct": -15, "light_pct": 0},
+        {"centre_deg": 120, "hue_deg": 0, "sat_pct": -15, "light_pct": 0},
+        {"centre_deg": 150, "hue_deg": 0, "sat_pct": -5, "light_pct": 0},
+        {"centre_deg": 180, "hue_deg": 0, "sat_pct": 0,  "light_pct": 0},
+        {"centre_deg": 210, "hue_deg": 0, "sat_pct": 0,  "light_pct": 0},
+        {"centre_deg": 240, "hue_deg": 0, "sat_pct": -5, "light_pct": 0},
+        {"centre_deg": 270, "hue_deg": 0, "sat_pct": 0,  "light_pct": 0},
+        {"centre_deg": 300, "hue_deg": 0, "sat_pct": 0,  "light_pct": 0},
+        {"centre_deg": 330, "hue_deg": 0, "sat_pct": 0,  "light_pct": 0}
+      ],
+      "global": {"hue_deg": 0, "sat_pct": 0},
+      "wb": {"amber_blue": 1, "green_magenta": 0},
+      "tone": {
+        "curve": [[0, 0.02], [0.25, 0.23], [0.5, 0.5], [0.75, 0.78], [1, 0.98]],
+        "curve_rgb": {
+          "r": [[0, 0.0], [0.5, 0.51], [1, 1.0]],
+          "b": [[0, 0.04], [0.5, 0.49], [1, 0.94]]
+        }
+      },
+      "camera_settings": {"contrast": 0, "sharpness": 0, "saturation": 0},
+      "per_hue_table": true
+    }
+  ]
+}
