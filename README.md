@@ -130,16 +130,20 @@ therefore means many rounds of fixing and testing (mostly on the colour wheel), 
 | 48 | Per-look colour editor on the Custom page | Field test passed |
 | 51 | Looks selectable in RAW Data Edit Custom1/Custom2 | Field test passed |
 | **56** | 51 + 4 new looks (Portra 400, Kodachrome 64, Ektar 100, Gold 200); per-bank Contrast/Sharpness/Saturation/Gradation and Sector/Hue/Sat/Light in RAW Data Edit; Highlight/Shadow/Contrast/Gradation work on looks; colour-named Sector; row titles; new icons; SCP Contrast/Sharpness on looks; Acros fix | Two independent audits passed; owner's field test: works well. **This is what the builder makes.** |
-| 57 | Colour wheel (below) | Coming soon; first test build ready |
+| 57-78 | Colour wheel (below): internal test builds | In testing on the owner's camera; not released |
 
-## In development (version 57)
+## In development (colour wheel)
 
 A colour wheel on the Color Creator screen, like the PEN-F:
 - the dial picks a colour sector, and several sectors can be selected at once;
 - Hue, Saturation and Lightness of the selected sectors are adjusted on the same screen, with a live preview;
 - the recipe is saved per Custom1 and Custom2, and is also applied to normal photos in Color Creator mode.
 
-Status: first test build ready, about to be tried on the camera. No release date and no files yet.
+Status (November 2026), after many internal test builds:
+- works on the camera: the JPEG matches the live view and the preview, all 12 sectors take effect, and the recipe
+  stays active after power-off but does not leak into other modes;
+- being fine-tuned now: the sector positions, so that each sector on screen edits exactly the colour drawn at it;
+- no release date and no files yet; the builder still makes version 56 only.
 
 ## Planned
 
