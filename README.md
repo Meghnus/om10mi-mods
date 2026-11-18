@@ -117,6 +117,11 @@ later version.
 Only milestones that were tried on a camera. The builder produces **only version 56**, which contains all
 earlier content; older versions are not offered.
 
+**About the version numbers.** A version number is not a major/minor release number and does not measure how
+many features were added. It counts test builds: every image that was built, audited and staged for a camera
+trial gets the next number, including small fixes and builds that were rejected. A jump from 56 to the 70s
+therefore means many rounds of fixing and testing (mostly on the colour wheel), not a long list of new features.
+
 | Version | Main content | Test status |
 |---|---|---|
 | 37 | 14 film looks with their own colour matrix and tone curve | Audited; installed on the owner's camera and the base of every later version |
