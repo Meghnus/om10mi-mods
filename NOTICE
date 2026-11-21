@@ -4,7 +4,7 @@ Copyright 2026 Meghnus
 Licences
 --------
 * Code (om10mi.py) and documentation: Apache License, Version 2.0 (see LICENSE).
-* Data (patch/looks56.json and any other look data): Creative Commons
+* Data (patch/looks87.json and any other look data): Creative Commons
   Attribution-NonCommercial-ShareAlike 4.0 International (see LICENSE-DATA). Attribution: "om10mi-mods,
   Meghnus, https://github.com/Meghnus/om10mi-mods", together with the references listed below. The data is a
   set of numbers fitted to those references, which is why it is licensed non-commercially.
@@ -19,7 +19,7 @@ Firmware
 --------
 The camera firmware is the property of OM Digital Solutions Corporation and is distributed by them under their
 own licence. This repository contains no firmware bytes: no firmware file, no decoded partitions, no
-disassembly, no copied tables, strings or icons. patch/looks56.json holds (a) our own new bytes, (b) build-time
+disassembly, no copied tables, strings or icons. patch/looks87.json holds (a) our own new bytes, (b) build-time
 instructions that copy ranges of the official image you download yourself, and (c) SHA-256 hashes of the
 original ranges, used only to check that the right firmware is being patched. Reference LUT files from the
 projects below are not included either; the look data we ship is a set of numbers (colour matrices and tone
@@ -72,5 +72,5 @@ Nothing below is bundled. "Knowledge only" means we read it and wrote our own co
 Disclaimer
 ----------
 This notice is informational and does not modify either licence. It is not legal advice. The looks shipped
-in patch/looks56.json are numerical approximations fitted to the references above; if you need certainty
+in patch/looks87.json are numerical approximations fitted to the references above; if you need certainty
 about how the references' licences apply to such numbers, ask their authors.

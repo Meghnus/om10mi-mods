@@ -3,7 +3,7 @@
 ## Quick start
 
 1. Download the release from the [Releases page](https://github.com/Meghnus/om10mi-mods/releases):
-   `om10mi-build.exe` (Windows, no Python needed) or `om10mi-mods-v56.zip` (any system, needs Python 3.10+).
+   `om10mi-build.exe` (Windows, no Python needed) or `om10mi-mods-v87.zip` (any system, needs Python 3.10+).
 2. Run it: double-click `om10mi-build.exe`, or unzip and double-click `om10mi-build.bat` (Windows) or
    `om10mi-build.command` (macOS), or run `./om10mi-build.sh` (Linux).
 3. Read and accept the OM Digital Solutions licence it shows. The builder downloads the official firmware 1.4
@@ -41,10 +41,10 @@ The builder will:
 1. ask the OM Digital Solutions server for the E-M10 Mark I v1.4 firmware and show the licence the server
    attaches to it. Type `yes` if you accept (or pass `--accept-license`);
 2. check that the downloaded file is the expected firmware (sha1 `5a0703ac...`);
-3. apply the edits, fix the checksums, and compare the result with the published hash (sha1 `0d4e1649...`). If
+3. apply the edits, fix the checksums, and compare the result with the published hash (sha1 `2d34ed2d...`). If
    they differ, nothing is written;
 4. write two folders:
-   - `out/DCOLYMP/E1139999.BIN`: version 56, to install;
+   - `out/DCOLYMP/E1139999.BIN`: version 87, to install;
    - `out/RESTORE/DCOLYMP/E1139999.BIN`: the official v1.4, to go back.
 
 Already have the official file? `python om10mi.py build --stock OLY_E_113_1400_0000_0000.BIN`.
@@ -68,7 +68,7 @@ only.
    blinks rapidly, which means it is finished.
 6. Switch off, remove the battery briefly, reinsert it, switch on.
 7. Delete the `DCOLYMP` folder from the card, then follow [docs/GUIDE-56.md](docs/GUIDE-56.md) (User Hue Reset
-   once, then the test list).
+   once, then the test list) and [docs/GUIDE-COLOR-WHEEL.md](docs/GUIDE-COLOR-WHEEL.md) (the colour wheel).
 
 Lamp rules:
 - steady orange = working, do not switch off;

@@ -1,5 +1,5 @@
 #!/bin/bash
-# Builds the version 56 card file (macOS: double-click this file).
+# Builds the version 87 card file (macOS: double-click this file).
 cd "$(dirname "$0")" || exit 1
 
 PY=""

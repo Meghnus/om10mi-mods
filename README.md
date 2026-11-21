@@ -1,7 +1,9 @@
+**Guides:** [Install](INSTALL.md) · [Color Wheel](docs/GUIDE-COLOR-WHEEL.md) · [Development](docs/DEVELOPMENT.md)
+
 # om10mi-mods
 
-Extra firmware features for the **Olympus OM-D E-M10 Mark I**: new film looks, colour editors, and a video
-recording limit of about 60 minutes.
+Extra firmware features for the **Olympus OM-D E-M10 Mark I**: film looks, colour editors, a PEN-F-style colour
+wheel, and a video recording limit of about 60 minutes.
 
 This project is unofficial and is not affiliated with OM Digital Solutions or Olympus.
 
@@ -14,7 +16,7 @@ you get.
 ## Quick start
 
 1. Download the release from the [Releases page](https://github.com/Meghnus/om10mi-mods/releases):
-   `om10mi-build.exe` (Windows, no Python needed) or `om10mi-mods-v56.zip` (any system, needs Python 3.10+).
+   `om10mi-build.exe` (Windows, no Python needed) or `om10mi-mods-v87.zip` (any system, needs Python 3.10+).
 2. Run it: double-click `om10mi-build.exe`, or unzip and double-click `om10mi-build.bat` (Windows) or
    `om10mi-build.command` (macOS), or run `./om10mi-build.sh` (Linux).
 3. Read and accept the OM Digital Solutions licence it shows. The builder downloads the official firmware 1.4
@@ -31,23 +33,44 @@ run the same `om10mi.py`.
 ## What this is
 
 This repository contains **no firmware**. It holds a builder (`om10mi.py`) and a list of edits
-(`patch/looks56.json`). The builder downloads the official E-M10 Mark I v1.4 firmware from the OM Digital
-Solutions server to your PC, applies the edits, checks the result byte for byte, and writes one file that is
-ready to copy to an SD card. The firmware itself remains the property of OM Digital Solutions.
+(`patch/*.json`). The builder downloads the official E-M10 Mark I v1.4 firmware from the OM Digital Solutions
+server to your PC, applies the edits, checks the result byte for byte, and writes one file that is ready to copy
+to an SD card. The firmware itself remains the property of OM Digital Solutions.
 
-There is a single release: **version 56**. It already includes everything listed in the version history below.
+There is a single release: **version 87**. It already includes everything listed in the version history below.
 
-## What version 56 contains
+## Colour wheel (new in version 87)
+
+A PEN-F-style colour wheel inside Color Creator, at the **ART** position of the mode dial: 12 colour sectors,
+each with Hue, Saturation and Lightness (-7 to +7), with a live preview that matches the JPEG.
+
+| Hue | Saturation | Lightness |
+|---|---|---|
+| ![Hue axis](docs/img/wheel-hue.jpg) | ![Saturation axis](docs/img/wheel-sat.jpg) | ![Lightness axis](docs/img/wheel-light.jpg) |
+
+*Photos of the camera screen by Meghnus, CC BY 4.0.*
+
+- **UP** selects / marks a sector (several at once), **DOWN** changes the axis (H, S, L), the **front dial**
+  moves between sectors, the **rear dial** changes the value, **hold OK** resets all sectors.
+- S -7 turns a colour fully grey (pale tones included); H ±7 shifts it by about one sector.
+- The recipe is applied to JPEG and live view, is kept after power-off, and does not leak into P / A / S / M.
+- Turning the dial to ART shows **COLOR WHEEL** with **RECIPE ON** or **EMPTY** in the mode guide.
+
+Full key map and example recipes: [Color Wheel guide](docs/GUIDE-COLOR-WHEEL.md).
+
+## What version 87 contains
 
 **Film looks**
 - 14 film looks, each with its own colour matrix and tone curve.
-- 4 new looks: **Portra 400**, **Kodachrome 64**, **Ektar 100**, **Gold 200**, each with its own colour. They
-  appear in the Picture Mode list, the SCP menu, Live View, and RAW Data Edit Custom1/Custom2.
+- 4 new looks: **Portra 400**, **Kodachrome 64**, **Ektar 100**, **Gold 200**, each with its own colour and
+  **its own icon**. They appear in the Picture Mode list, the SCP menu, Live View, and RAW Data Edit
+  Custom1/Custom2.
 - Contrast, Sharpness, Highlight, Shadow and Gradation really change the picture on looks, including Eterna and
   the new looks. In the SCP menu the Contrast and Sharpness dials work on every look.
 - Acros in RAW Data Edit Custom is black and white again.
 
 **Colour editors**
+- **Colour wheel** in Color Creator (above).
 - Per-sector colour editor: Hue, Saturation and Lightness for 12 colour sectors (Green, Amber, Teal, Cyan,
   Azure, Blue, Magenta, Indigo, Olive, Red, Orange, Yellow). The Sector row shows colour names instead of a dash.
 - Per-look colour editor on the Custom page (Picture Mode, right key).
@@ -60,11 +83,16 @@ There is a single release: **version 56**. It already includes everything listed
 - The recording limit is raised from 29:59 to 59:50 (the recording library is set to 60 minutes). A single video
   file is still capped at 4 GB (FAT32), so at high bitrates recording can stop before 59:50.
 
-The full guide and test list are in [docs/GUIDE-56.md](docs/GUIDE-56.md).
+**Stability**
+- The Contrast / Gradation code on looks was made safe when the camera processes two images at once
+  (related to [issue #4](https://github.com/Meghnus/om10mi-mods/issues/4)).
+
+The guides are [docs/GUIDE-56.md](docs/GUIDE-56.md) (looks and editors) and
+[docs/GUIDE-COLOR-WHEEL.md](docs/GUIDE-COLOR-WHEEL.md) (colour wheel).
 
 ## Samples
 
-Straight out of camera, no editing: an E-M10 Mark I running version 56. Each scene was shot once as RAW; the
+Straight out of camera, no editing: an E-M10 Mark I running the version 56 look pack. Each scene was shot once as RAW; the
 looks below are the camera's own conversions of that RAW (RAW Data Edit). The first picture of every sheet is
 the stock rendering from the same RAW (**Natural**; the Alley scene was shot in **i-Enhance** and is labelled
 that way), taken from the preview JPEG the camera stores inside the RAW file, so the difference between the
@@ -106,21 +134,31 @@ shown yet.
   software. Building and installing this file is your own decision and responsibility. Read that licence.
 - Do not share the built BIN file or the official firmware; this repository deliberately includes neither.
 
-## Known limitations
+## Known changes and limitations
 
-The four new looks borrow the icon of an existing look: Portra 400 = Pro Neg Std, Kodachrome 64 = Classic
-Chrome, Ektar 100 = Velvia, Gold 200 = Nostalgic Neg. The names are shown correctly; own icons are planned for a
-later version.
+- **The ART dial position is now the colour wheel.** The stock art filters are no longer reached by the dial.
+  To use an art filter, set the dial to P / A / S / M and choose it through **Picture Mode in the shooting
+  menu**.
+- **Fn2 (multi-function) is one camera-wide setting**, as on a stock camera: hold Fn2 and turn a dial to pick
+  the function. Whatever you picked last stays selected in every mode, including ART, so you can switch to
+  Highlight & Shadow and back to Color Creator without losing the wheel recipe.
+- The ART mode guide still shows the **P** icon next to the COLOR WHEEL text.
+- **RAW files:** the look's colour matrix is also written into the makernote ColorMatrix tag (0x0200). Adobe
+  software ignores that tag; tools that honour it (for example `dcraw -w`) will use it.
+- **Lightroom shows a colour temperature about 250-300 K lower than the camera.** This is stock behaviour on
+  the E-M10 (Lightroom re-derives Kelvin through Adobe's profile); this project does not change the
+  white-balance data ([issue #3](https://github.com/Meghnus/om10mi-mods/issues/3)).
 
 ## Version history
 
-Only milestones that were tried on a camera. The builder produces **only version 56**, which contains all
+Only milestones that were tried on a camera. The builder produces **only version 87**, which contains all
 earlier content; older versions are not offered.
 
 **About the version numbers.** A version number is not a major/minor release number and does not measure how
 many features were added. It counts test builds: every image that was built, audited and staged for a camera
-trial gets the next number, including small fixes and builds that were rejected. A jump from 56 to the 70s
+trial gets the next number, including small fixes and builds that were rejected. A jump from 56 to 87
 therefore means many rounds of fixing and testing (mostly on the colour wheel), not a long list of new features.
+Please mention the version number when you report an issue.
 
 | Version | Main content | Test status |
 |---|---|---|
@@ -129,37 +167,30 @@ therefore means many rounds of fixing and testing (mostly on the colour wheel), 
 | 46 | Per-sector colour editor (Hue/Saturation/Lightness) | Field test passed: the editor shows and the effect is visible in photos |
 | 48 | Per-look colour editor on the Custom page | Field test passed |
 | 51 | Looks selectable in RAW Data Edit Custom1/Custom2 | Field test passed |
-| **56** | 51 + 4 new looks (Portra 400, Kodachrome 64, Ektar 100, Gold 200); per-bank Contrast/Sharpness/Saturation/Gradation and Sector/Hue/Sat/Light in RAW Data Edit; Highlight/Shadow/Contrast/Gradation work on looks; colour-named Sector; row titles; new icons; SCP Contrast/Sharpness on looks; Acros fix | Two independent audits passed; owner's field test: works well. **This is what the builder makes.** |
-| 57-78 | Colour wheel (below): internal test builds | In testing on the owner's camera; not released |
-
-## In development (colour wheel)
-
-A colour wheel on the Color Creator screen, like the PEN-F:
-- the dial picks a colour sector, and several sectors can be selected at once;
-- Hue, Saturation and Lightness of the selected sectors are adjusted on the same screen, with a live preview;
-- the recipe is saved per Custom1 and Custom2, and is also applied to normal photos in Color Creator mode.
-
-Status (November 2026), after many internal test builds:
-- works on the camera: the JPEG matches the live view and the preview, all 12 sectors take effect, and the recipe
-  stays active after power-off but does not leak into other modes;
-- being fine-tuned now: the sector positions, so that each sector on screen edits exactly the colour drawn at it;
-- no release date and no files yet; the builder still makes version 56 only.
+| 56 | 51 + 4 new looks (Portra 400, Kodachrome 64, Ektar 100, Gold 200); per-bank Contrast/Sharpness/Saturation/Gradation and Sector/Hue/Sat/Light in RAW Data Edit; Highlight/Shadow/Contrast/Gradation work on looks; colour-named Sector; row titles; new icons; SCP Contrast/Sharpness on looks; Acros fix | Two independent audits passed; owner's field test: works well |
+| 57-86 | Colour wheel: internal test builds | Tested on the owner's camera; not released |
+| **87** | 56 + colour wheel in Color Creator (12 sectors, H/S/L), on-screen hint, COLOR WHEEL mode guide, own icons for the 4 new looks, Contrast/Gradation stability fix | Tested by running the camera code in a PC emulator, independently reviewed, then field-tested on the owner's camera. **This is what the builder makes.** |
 
 ## Planned
 
-**Import of a LUT/.cube file into a look slot of your choice.** A PC tool turns your .cube file into an
-approximate camera look (colour matrix plus tone curve). The camera has no 3D-LUT stage, so this is an
-approximation: close for gentle film-style LUTs, weaker for extreme ones. You pick which look slot it replaces,
-preview the result by camera simulation on the PC first, then receive a new firmware file to install. Planned
-after the colour wheel.
+**Import of a LUT/.cube/.xmp file into a look slot of your choice.** A PC tool turns your file into an
+approximate camera look (colour matrix plus tone curve plus per-sector colour). The camera has no 3D-LUT stage, so
+this is an approximation: close for gentle film-style LUTs, weaker for extreme ones. You pick which look slot it
+replaces, preview the result by camera simulation on the PC first, then receive a new firmware file to install.
 
 ## Credits
 
 No code or LUT files from the projects below are included; only fitted numbers (matrices and curves) that we
-computed ourselves. Licences and details are in [NOTICE](NOTICE).
+computed ourselves, or facts and ideas. Licences and details are in [NOTICE](NOTICE).
 
 - **cakelesscoder/caduceus-ep7** (Apache-2.0): firmware mods for the E-P7; design reference for the look editor,
-  HSL handling and the ends of the tone curve. https://github.com/cakelesscoder/caduceus-ep7
+  HSL handling and the ends of the tone curve, and the inspiration for the colour-wheel idea.
+  https://github.com/cakelesscoder/caduceus-ep7
+- **fishcu/oly_fw_analysis** (Apache-2.0): research notes on Olympus / OM System firmware (PEN-F in most depth):
+  the image-processing job map and grain notes. https://github.com/fishcu/oly_fw_analysis
+- **cmdada/em10-fw** (GPL-3.0, notes on the same E-M10 Mark I v1.4 firmware): facts on the multi-core and cache
+  layout, the watchdog and the fault handling, used in the freeze analysis. Read only, no code copied.
+  https://github.com/cmdada/em10-fw
 - **TingfengLuo/Camera-Profile-for-Fujifilm-Film-Simulation** and **abpy/FujifilmCameraProfiles**: Fujifilm
   film-simulation profiles used as colour targets for the Fuji-style looks.
 - **spektrafilm** (Andrea Volpato) through the LUTs bundled with **RapidRAW** (CyberTimon): reference for
@@ -173,20 +204,22 @@ computed ourselves. Licences and details are in [NOTICE](NOTICE).
 - An anonymous community modder who published the E-M5 Mark II video-limit patch (the idea for the recording
   limit).
 - **GNU binutils** (MN10300 opcodes) and **Linux arch/mn10300**: CPU documentation for reading the camera code.
+- **Imaging Resource**, **Adobe Community** and **The Lightroom Queen**: references for the AF and Lightroom
+  white-balance notes.
 
 Olympus, OM System, OM-D and the film names (Portra, Kodachrome, Ektar, Gold, Fujifilm and others) are
 trademarks of their owners and are used only to identify things.
 
 ## Licences
 
-Two licences, by kind of content:
-
 | Part | Licence |
 |---|---|
-| Code `om10mi.py` and documentation (README, INSTALL, guide) | Apache License 2.0, see [LICENSE](LICENSE) |
-| Data: `patch/looks56.json` and any other look data | Creative Commons BY-NC-SA 4.0 (attribution, non-commercial, share-alike), see [LICENSE-DATA](LICENSE-DATA) |
+| Code `om10mi.py` and documentation (README, INSTALL, guides) | Apache License 2.0, see [LICENSE](LICENSE) |
+| Data: `patch/*.json` and any other look data | Creative Commons BY-NC-SA 4.0 (attribution, non-commercial, share-alike), see [LICENSE-DATA](LICENSE-DATA) |
+| Colour-wheel photos in `docs/img` | CC BY 4.0, by Meghnus |
 | Sample pictures in `docs/samples` | (c) 2026 Meghnus. All rights reserved: viewing only, no reuse. See [docs/samples/README.md](docs/samples/README.md) |
 
 The look data consists of numbers fitted to the references credited above and in [NOTICE](NOTICE), which is why
 it carries a non-commercial licence with attribution to all of them. None of the licences covers the OM Digital
-Solutions firmware.
+Solutions firmware. The method used to develop and test the firmware is in
+[docs/DEVELOPMENT.md](docs/DEVELOPMENT.md).

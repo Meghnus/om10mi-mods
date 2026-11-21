@@ -1,4 +1,4 @@
-# Version 56 guide
+# Guide: looks, colour editors and row captions (since version 56, current in 87)
 
 New looks, colour-named sectors, row captions and new icons.
 
@@ -21,9 +21,8 @@ This version already contains everything that came before it (14 film looks, per
 editors, looks in RAW Data Edit, a video recording limit of about 60 minutes). A summary is in the
 [README](../README.md).
 
-**Known limitation.** The four new looks borrow the icon of an existing look: Portra 400 uses the Pro Neg Std
-icon, Kodachrome 64 uses Classic Chrome, Ektar 100 uses Velvia and Gold 200 uses Nostalgic Neg. The names are
-shown correctly; own icons are planned for a later version.
+**Icons.** In version 87 each of the four new looks has its own icon in the Picture Mode list. (Version 56 still
+borrowed the icon of an existing look for each of them.)
 
 ## B. Do once after installing
 

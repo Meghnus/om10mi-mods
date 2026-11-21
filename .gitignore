@@ -1,7 +1,14 @@
+# Never commit firmware: no images, no decoded partitions, no dumps (see tools/prepush_check.py)
 *.BIN
 *.bin
 *.dec
 *.part
+*.dmp
+*.dump
+*.img
+*.rom
+*dump*
+official/
 out/
 __pycache__/
 *.pyc

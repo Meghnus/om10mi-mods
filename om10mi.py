@@ -3,7 +3,7 @@
 
 This repository contains no firmware. The builder takes the official firmware
 update (E113, v1.4) that you download yourself from the OM Digital Solutions
-server, applies the edits listed in patch/looks56.json, and writes a card-ready
+server, applies the edits listed in patch/looks87.json, and writes a card-ready
 copy that is checked byte for byte against the published result hash.
 
     python om10mi.py build                    download the official file, then build
@@ -17,7 +17,7 @@ never writes anywhere except the output folder (default: ./out) and, only when y
 for it, DCOLYMP/E1139999.BIN on the SD card you name.
 
 Copyright 2026 Meghnus. This file is licensed under the Apache License 2.0 (see LICENSE).
-The patch data in patch/looks56.json is licensed separately (CC BY-NC-SA 4.0, see LICENSE-DATA).
+The patch data in patch/looks87.json is licensed separately (CC BY-NC-SA 4.0, see LICENSE-DATA).
 """
 
 import argparse
@@ -41,7 +41,8 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 FROZEN = bool(getattr(sys, "frozen", False))          # true in the packaged Windows exe
 APP_DIR = os.path.dirname(sys.executable) if FROZEN else HERE   # where "out" lives by default
 RES_DIR = getattr(sys, "_MEIPASS", HERE)              # where patch/ lives
-PATCH_FILE = os.path.join(RES_DIR, "patch", "looks56.json")
+PACK_VERSION = "87"
+PATCH_FILE = os.path.join(RES_DIR, "patch", "looks%s.json" % PACK_VERSION)
 
 MODEL_ID = 0x1130                      # E-M10 Mark I; the builder refuses anything else
 STOCK_NAME = "OLY_E_113_1400_0000_0000.BIN"
@@ -445,7 +446,7 @@ def copy_to_sd(image, sd, assume_yes):
 def cmd_build(args):
     patch = load_patch()
     stock = obtain_stock(args, patch)
-    print("applying the look pack (a minute or so) ...")
+    print("applying the version %s look pack (a minute or so) ..." % PACK_VERSION)
     image = build_image(stock, patch)
     sha = sha1_hex(image)
     if len(image) != patch["result_size"] or sha != patch["result_sha1"]:
@@ -466,7 +467,7 @@ def cmd_build(args):
             if os.path.exists(tmp):
                 os.remove(tmp)
     print()
-    print("done. sha1 %s matches the published look pack." % sha)
+    print("done. sha1 %s matches the published version %s." % (sha, PACK_VERSION))
     print("  to flash   : copy  %s  to the card" % os.path.join(args.out, "DCOLYMP"))
     print("  to go back : copy  %s  instead (official 1.4)" % os.path.join(args.out, "RESTORE", "DCOLYMP"))
     sd = args.sd
@@ -487,7 +488,7 @@ def cmd_verify(args):
     sha = sha1_hex(data)
     patch = load_patch()
     if sha == patch["result_sha1"]:
-        print("this is the look pack 56 image")
+        print("this is the version %s image" % PACK_VERSION)
     elif sha == patch["stock_sha1"]:
         print("this is the official 1.4 image")
     else:
