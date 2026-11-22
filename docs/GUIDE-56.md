@@ -26,8 +26,10 @@ borrowed the icon of an existing look for each of them.)
 
 ## B. Do once after installing
 
-1. Open the User Hue menu and choose **Reset**, once. This clears leftover old values so the 4 new looks start
-   from zero.
+1. Reset User Hue once (recommended): **MENU > Shooting Menu 1 > Picture Mode > Custom**, press the **right
+   arrow**, scroll down to the **User Hue** row (it is below the stock settings, not at the top) and choose
+   **Reset**. This clears leftover old values so the 4 new looks start from zero. The colour wheel does not need
+   it. The other rows on that page (Look, Sector, H/S/L) are an early per-look editor; you can leave them alone.
 2. If one of the Custom banks (Custom1 or Custom2) was set to Acros, the text **ART12** may appear there once.
    That is normal. Select Acros again and it goes away.
 

@@ -27,7 +27,8 @@ Carried over from earlier versions:
 - 40: video recording limit 59:50.
 - 37: 14 film looks with their own colour matrix and tone curve.
 
-After installing: User Hue > Reset, once.
+After installing (recommended): MENU > Shooting Menu 1 > Picture Mode > Custom, right arrow, scroll down to
+User Hue > Reset, once.
 
 ## 56
 

@@ -67,8 +67,9 @@ only.
 5. The AF lamp on the front lights orange. **Do not switch the camera off** while this runs; wait until the lamp
    blinks rapidly, which means it is finished.
 6. Switch off, remove the battery briefly, reinsert it, switch on.
-7. Delete the `DCOLYMP` folder from the card, then follow [docs/GUIDE-56.md](docs/GUIDE-56.md) (User Hue Reset
-   once, then the test list) and [docs/GUIDE-COLOR-WHEEL.md](docs/GUIDE-COLOR-WHEEL.md) (the colour wheel).
+7. Delete the `DCOLYMP` folder from the card. Recommended once: MENU > Shooting Menu 1 > Picture Mode > Custom,
+   right arrow, scroll down to **User Hue** and choose **Reset**. Then see [docs/GUIDE-56.md](docs/GUIDE-56.md)
+   (the test list) and [docs/GUIDE-COLOR-WHEEL.md](docs/GUIDE-COLOR-WHEEL.md) (the colour wheel).
 
 Lamp rules:
 - steady orange = working, do not switch off;
