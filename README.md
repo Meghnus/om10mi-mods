@@ -16,7 +16,7 @@ you get.
 ## Quick start
 
 1. Download the release from the [Releases page](https://github.com/Meghnus/om10mi-mods/releases):
-   `om10mi-build.exe` (Windows, no Python needed) or `om10mi-mods-v87.zip` (any system, needs Python 3.10+).
+   `om10mi-build.exe` (Windows, no Python needed) or `om10mi-mods-v88.zip` (any system, needs Python 3.10+).
 2. Run it: double-click `om10mi-build.exe`, or unzip and double-click `om10mi-build.bat` (Windows) or
    `om10mi-build.command` (macOS), or run `./om10mi-build.sh` (Linux).
 3. Read and accept the OM Digital Solutions licence it shows. The builder downloads the official firmware 1.4
@@ -37,7 +37,7 @@ This repository contains **no firmware**. It holds a builder (`om10mi.py`) and a
 server to your PC, applies the edits, checks the result byte for byte, and writes one file that is ready to copy
 to an SD card. The firmware itself remains the property of OM Digital Solutions.
 
-There is a single release: **version 87**. It already includes everything listed in the version history below.
+There is a single release: **version 88**. It already includes everything listed in the version history below.
 
 ## Colour wheel (new in version 87)
 
@@ -58,7 +58,7 @@ each with Hue, Saturation and Lightness (-7 to +7), with a live preview that mat
 
 Full key map and example recipes: [Color Wheel guide](docs/GUIDE-COLOR-WHEEL.md).
 
-## What version 87 contains
+## What version 88 contains
 
 **Film looks**
 - 14 film looks, each with its own colour matrix and tone curve.
@@ -73,7 +73,9 @@ Full key map and example recipes: [Color Wheel guide](docs/GUIDE-COLOR-WHEEL.md)
 - **Colour wheel** in Color Creator (above).
 - Per-sector colour editor: Hue, Saturation and Lightness for 12 colour sectors (Green, Amber, Teal, Cyan,
   Azure, Blue, Magenta, Indigo, Olive, Red, Orange, Yellow). The Sector row shows colour names instead of a dash.
-- Per-look colour editor on the Custom page (Picture Mode, right key).
+- **Per-look colour editor** (new in 88): in Picture Mode, highlight a colour look and press the right arrow. The
+  User Hue page has User Hue (On / Off / Reset), Sector, Hue, Sector Sat and Lightness, and the edit applies to
+  that look only. Acros has no such page. Details in [docs/GUIDE-56.md](docs/GUIDE-56.md).
 - Looks can be chosen in RAW Data Edit Custom1 and Custom2; each bank has its own Contrast, Sharpness,
   Saturation, Gradation and Sector/Hue/Sat/Light rows.
 - Every row has its own title and caption (for example "Gradation High Key"; an unchanged row reads
@@ -148,15 +150,18 @@ shown yet.
 - **Lightroom shows a colour temperature about 250-300 K lower than the camera.** This is stock behaviour on
   the E-M10 (Lightroom re-derives Kelvin through Adobe's profile); this project does not change the
   white-balance data ([issue #3](https://github.com/Meghnus/om10mi-mods/issues/3)).
+- **Version 88:** the help text of one button-function option reads "Sector Sat". In the SCP, for the film
+  looks, Sharpness / Contrast / Saturation values set on the OK adjust screen may not be shown on the SCP tile;
+  this is being investigated.
 
 ## Version history
 
-Only milestones that were tried on a camera. The builder produces **only version 87**, which contains all
+Only milestones that were tried on a camera. The builder produces **only version 88**, which contains all
 earlier content; older versions are not offered.
 
 **About the version numbers.** A version number is not a major/minor release number and does not measure how
 many features were added. It counts test builds: every image that was built, audited and staged for a camera
-trial gets the next number, including small fixes and builds that were rejected. A jump from 56 to 87
+trial gets the next number, including small fixes and builds that were rejected. A jump from 56 to 88
 therefore means many rounds of fixing and testing (mostly on the colour wheel), not a long list of new features.
 Please mention the version number when you report an issue.
 
@@ -165,11 +170,12 @@ Please mention the version number when you report an issue.
 | 37 | 14 film looks with their own colour matrix and tone curve | Audited; installed on the owner's camera and the base of every later version |
 | 40 | 37 + video recording limit raised to about 60 minutes (59:50) | Installed and used on the camera; recording beyond 30 minutes not yet confirmed |
 | 46 | Per-sector colour editor (Hue/Saturation/Lightness) | Field test passed: the editor shows and the effect is visible in photos |
-| 48 | Per-look colour editor on the Custom page | Field test passed |
+| 48 | Per-look colour editor on the Custom page (moved to each look's own page in 88) | Field test passed |
 | 51 | Looks selectable in RAW Data Edit Custom1/Custom2 | Field test passed |
 | 56 | 51 + 4 new looks (Portra 400, Kodachrome 64, Ektar 100, Gold 200); per-bank Contrast/Sharpness/Saturation/Gradation and Sector/Hue/Sat/Light in RAW Data Edit; Highlight/Shadow/Contrast/Gradation work on looks; colour-named Sector; row titles; new icons; SCP Contrast/Sharpness on looks; Acros fix | Two independent audits passed; owner's field test: works well |
 | 57-86 | Colour wheel: internal test builds | Tested on the owner's camera; not released |
-| **87** | 56 + colour wheel in Color Creator (12 sectors, H/S/L), on-screen hint, COLOR WHEEL mode guide, own icons for the 4 new looks, Contrast/Gradation stability fix | Tested by running the camera code in a PC emulator, independently reviewed, then field-tested on the owner's camera. **This is what the builder makes.** |
+| 87 | 56 + colour wheel in Color Creator (12 sectors, H/S/L), on-screen hint, COLOR WHEEL mode guide, own icons for the 4 new looks, Contrast/Gradation stability fix | Tested by running the camera code in a PC emulator, independently reviewed, then field-tested on the owner's camera |
+| **88** | 87 + per-look colour editor on each colour look's right-arrow page (User Hue On/Off/Reset, Sector, Hue, Sector Sat, Lightness); User Hue Reset moved there from the Custom page | Field-tested on the owner's camera. **This is what the builder makes.** |
 
 ## Planned
 

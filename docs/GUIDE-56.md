@@ -1,4 +1,4 @@
-# Guide: looks, colour editors and row captions (since version 56, current in 87)
+# Guide: looks, colour editors and row captions (since version 56, current in 88)
 
 New looks, colour-named sectors, row captions and new icons.
 
@@ -21,15 +21,36 @@ This version already contains everything that came before it (14 film looks, per
 editors, looks in RAW Data Edit, a video recording limit of about 60 minutes). A summary is in the
 [README](../README.md).
 
-**Icons.** In version 87 each of the four new looks has its own icon in the Picture Mode list. (Version 56 still
+**Icons.** Since version 87 each of the four new looks has its own icon in the Picture Mode list. (Version 56 still
 borrowed the icon of an existing look for each of them.)
+
+## A2. Per-look colour editor (new in version 88)
+
+Every colour look has its own colour page.
+
+1. **MENU > Shooting Menu 1 > Picture Mode.** Highlight a colour look (for example Portra 400).
+2. Press the **right arrow**. The **User Hue** page opens with these rows:
+   - **User Hue**: On / Off / Reset;
+   - **Sector**: the colour you want to change (shown by name);
+   - **Hue**: shifts that colour;
+   - **Sector Sat**: saturation of that colour;
+   - **Lightness**: lightness of that colour.
+3. The edit applies to **that look only**; the other looks keep their own settings. Acros has no such page.
+
+This replaces the single editor that used to be on the Custom page. **Reset** now lives on a look's right-arrow
+page (see section B). The colour wheel (ART position of the mode dial) is separate: see
+[GUIDE-COLOR-WHEEL.md](GUIDE-COLOR-WHEEL.md).
+
+**Known issues in version 88.** The help text of one button-function option reads "Sector Sat". In the SCP, for
+the film looks, Sharpness / Contrast / Saturation values set on the OK adjust screen may not be shown on the SCP
+tile; this is being investigated.
 
 ## B. Do once after installing
 
-1. Reset User Hue once (recommended): **MENU > Shooting Menu 1 > Picture Mode > Custom**, press the **right
-   arrow**, scroll down to the **User Hue** row (it is below the stock settings, not at the top) and choose
-   **Reset**. This clears leftover old values so the 4 new looks start from zero. The colour wheel does not need
-   it. The other rows on that page (Look, Sector, H/S/L) are an early per-look editor; you can leave them alone.
+1. Reset User Hue once (recommended): **MENU > Shooting Menu 1 > Picture Mode**, highlight any colour look, press
+   the **right arrow** and choose **User Hue > Reset**. (In versions before 88 this was on the Custom page.) This
+   clears leftover old values so the looks start from zero. The colour wheel does not need it. The other rows on
+   that page (Sector, Hue, Sector Sat, Lightness) are the per-look editor (section A2); you can leave them alone.
 2. If one of the Custom banks (Custom1 or Custom2) was set to Acros, the text **ART12** may appear there once.
    That is normal. Select Acros again and it goes away.
 

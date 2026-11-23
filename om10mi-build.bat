@@ -1,5 +1,5 @@
 @echo off
-rem Builds the version 87 card file. Double-click this file.
+rem Builds the version 88 card file. Double-click this file.
 setlocal
 cd /d "%~dp0"
 title om10mi build
