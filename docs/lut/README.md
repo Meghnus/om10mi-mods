@@ -23,21 +23,31 @@ OM / Olympus cameras: use these tools.
    exact camera model from your own firmware tables (refuses above 0.5 dE of the file's prediction), writes only that slot, and runs a
    confinement audit. It never writes to a camera or a card by itself.
 
-## Look list manager (`panel.html`)
+## Look pack builder (`panel.html`)
 
-A second page, same rules (static, local, no upload). **Home screen = the Picture Mode list**: i-Enhance (fixed first), the 18 look slots and the stock items
-(Vivid, Natural, Muted, Portrait, Monotone, Custom, e-Portrait, Color Creator, ART1..12, greyed). Drag the handle, use the arrows or Alt+Up/Down to reorder;
-the name box renames a slot (live capacity counter, printable ASCII, no `@`); `replace...` opens
-the per-look editor: import a `.cube` / `.xmp`, the page ranks and fits only candidates of the slot's base picture mode (the same-base rule), shows a
-before/after divider on the reference scenes, and `Accept` stores the look in the pack (recipe sliders are not part of this stage). Slot 2 (Acros,
-monotone) can be renamed and moved, never replaced. Hiding a look is **not available** (not proven on a camera; the eye is disabled and the builder refuses `hidden`).
+A second page, same rules (static, local, no upload). It is one flow, top to bottom:
 
-Pack I/O: **Export pack JSON** (a look file v2 with a `pack` key: `base` {name, sha1 of the exact release image}, `order`, `renames`, `looks[]`),
-**Import pack JSON**, **Share link** (the pack, deflate + base64url, in the URL fragment: this page never sends it anywhere; whoever you give the link to
-gets the names, order and fitted numbers), **Show build command**. Build on your PC:
+1. **Import a LUT**: press **Choose file...** (`.cube` or Adobe Creative Profile `.xmp`), or drop the file anywhere on the page, or press one of the three CC0 sample chips.
+   A dropped `.json` opens as a pack; a dropped photo becomes the preview picture.
+2. **Pick a slot and name it**: the page ranks the four base picture modes against your LUT (best match preselected) and offers only the slots of the chosen base
+   mode (the same-base rule). Name the look (live capacity counter, printable ASCII, no `@`) and choose its place in the menu ("after Gold200" and so on;
+   "keep where it is" is the default).
+3. **Add to pack**: the fit runs in Web Workers as soon as LUT and mode are known (a few seconds). The before/after divider shows the original (or the LUT
+   target) against our camera model, on six reference scenes or on your own photo; **Add to pack** arms when the fit is done.
+
+**Your pack** is the Picture Mode list: i-Enhance (fixed first), the 18 look slots and the stock items (Vivid, Natural, Muted, Portrait, Monotone, Custom,
+e-Portrait, Color Creator, ART1..12). Drag the grip, use the arrows, or press Alt+Up/Down on a focused row; edit a menu name in place (capacity counter per
+slot); **Replace** imports another LUT into a slot, **Remove look** gives the stock look back. Slot 2 (Acros, monotone) can be renamed and moved, never
+replaced. Hiding a look is **not available** (not proven on a camera; the builder refuses `hidden`).
+
+**Export** holds the pack name, the base image release (sha1), the live pack check, **Export pack** and the **build command** with a Copy button. Secondary:
+**Open pack JSON** (top bar), **Copy share link** (the pack, deflate + base64url, in the URL fragment: this page never sends it anywhere; whoever you give the
+link to gets the names, order and fitted numbers), **Reset pack**. A pack is a look file v2 with a `pack` key: `base` {name, sha1 of the exact release image},
+`order`, `renames`, `looks[]`. Build on your PC:
 `python looktool/om10mi_look.py --pack NAME.pack.json --base YOUR_IMAGE.BIN --out DIR --lut-dir DIR_OF_YOUR_LUTS`. The page checks the pack rules as it goes
 (unique slots, slot 2 never replaced, names within capacity, order items valid, fit mode = slot base mode, 40-hex sha1);
 `python fw/lut_stage1/lookfile/lookfile_check.py FILE` and the builder remain the authority. A pack holds no firmware bytes. Scores are model predictions.
+Dark and light theme (Auto follows the system), phone and desktop layouts, keyboard operable; no external fonts, scripts or CDNs, so it works offline once loaded.
 List manager and before/after divider ideas from the Caduceus Control Panel (cakelesscoder/caduceus-ep7, Apache-2.0); no code or data copied.
 
 ## What the result is, and is not
