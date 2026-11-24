@@ -1,10 +1,14 @@
-# om10mi-mods
+<h1 align="center">om10mi-mods</h1>
 
-[![Total downloads](https://img.shields.io/github/downloads/Meghnus/om10mi-mods/total?label=downloads&color=c8932e)](https://github.com/Meghnus/om10mi-mods/releases)
-[![Latest release downloads](https://img.shields.io/github/downloads/Meghnus/om10mi-mods/latest/total?label=latest%20release&color=c8932e)](https://github.com/Meghnus/om10mi-mods/releases/latest)
-[![Latest release](https://img.shields.io/github/v/release/Meghnus/om10mi-mods?label=version)](https://github.com/Meghnus/om10mi-mods/releases/latest)
+<p align="center">
+  <a href="https://github.com/Meghnus/om10mi-mods/releases"><img alt="Total downloads" src="https://img.shields.io/github/downloads/Meghnus/om10mi-mods/total?label=downloads&color=c8932e"></a>
+  <a href="https://github.com/Meghnus/om10mi-mods/releases/latest"><img alt="Latest release downloads" src="https://img.shields.io/github/downloads/Meghnus/om10mi-mods/latest/total?label=latest%20release&color=c8932e"></a>
+  <a href="https://github.com/Meghnus/om10mi-mods/releases/latest"><img alt="Latest release" src="https://img.shields.io/github/v/release/Meghnus/om10mi-mods?label=version"></a>
+</p>
 
-**Guides:** [Install](INSTALL.md) · [Color Wheel](docs/GUIDE-COLOR-WHEEL.md) · [Look pack builder](looktool/README.md) · [Development](docs/DEVELOPMENT.md)
+<p align="center">
+  <b>Guides:</b> <a href="INSTALL.md">Install</a> · <a href="docs/GUIDE-COLOR-WHEEL.md">Color Wheel</a> · <a href="looktool/README.md">Look pack builder</a> · <a href="docs/DEVELOPMENT.md">Development</a>
+</p>
 
 Extra firmware features for the **Olympus OM-D E-M10 Mark I**: film looks, colour editors, a PEN-F-style colour
 wheel, and a video recording limit of about 60 minutes.
