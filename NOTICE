@@ -4,7 +4,7 @@ Copyright 2026 Meghnus
 Licences
 --------
 * Code (om10mi.py) and documentation: Apache License, Version 2.0 (see LICENSE).
-* Data (patch/looks88.json and any other look data): Creative Commons
+* Data (patch/looks94.json, looktool/web/model-cm-v2-web1.json, docs/lut/model-cm-v2-web1.json and any other look data): Creative Commons
   Attribution-NonCommercial-ShareAlike 4.0 International (see LICENSE-DATA). Attribution: "om10mi-mods,
   Meghnus, https://github.com/Meghnus/om10mi-mods", together with the references listed below. The data is a
   set of numbers fitted to those references, which is why it is licensed non-commercially.
@@ -19,7 +19,7 @@ Firmware
 --------
 The camera firmware is the property of OM Digital Solutions Corporation and is distributed by them under their
 own licence. This repository contains no firmware bytes: no firmware file, no decoded partitions, no
-disassembly, no copied tables, strings or icons. patch/looks88.json holds (a) our own new bytes, (b) build-time
+disassembly, no copied tables, strings or icons. patch/looks94.json holds (a) our own new bytes, (b) build-time
 instructions that copy ranges of the official image you download yourself, and (c) SHA-256 hashes of the
 original ranges, used only to check that the right firmware is being patched. Reference LUT files from the
 projects below are not included either; the look data we ship is a set of numbers (colour matrices and tone
@@ -28,6 +28,9 @@ curves) that we fitted ourselves to match them.
 Acknowledgements and references
 --------------------------------
 Nothing below is bundled. "Knowledge only" means we read it and wrote our own code and data.
+
+* atx/fenykl - https://github.com/atx/fenykl - MIT. Mod loader with C plugins for the Olympus E-M10 Mark II.
+  Credited where its ideas are used; no code or data copied or used yet.
 
 * cakelesscoder/caduceus-ep7 - https://github.com/cakelesscoder/caduceus-ep7 - Apache-2.0.
   Firmware mods for the Olympus PEN E-P7. Design reference for the on-camera look editor, HSL handling and
@@ -47,7 +50,8 @@ Nothing below is bundled. "Knowledge only" means we read it and wrote our own co
 
 * HaldCLUT film emulations / RawTherapee Film Simulation Collection - by Pat David, Pavlov Dmitry and
   Michael Ezra (2015) - https://rawpedia.rawtherapee.com/Film_Simulation - CC BY-SA 4.0 per its README.
-  Colour target for Kodachrome 64. No LUT shipped.
+  Colour target for Kodachrome 64. No LUT shipped. The look pack builder does not include any HaldCLUT; a look fitted
+  from one needs its credit and ShareAlike terms.
 
 * Spectral Film LUT, by Jan Lohse - https://github.com/JanLohse/spectral_film_lut - MIT.
   A second, independent film model used as a cross-check. No code or LUT shipped.
@@ -72,5 +76,5 @@ Nothing below is bundled. "Knowledge only" means we read it and wrote our own co
 Disclaimer
 ----------
 This notice is informational and does not modify either licence. It is not legal advice. The looks shipped
-in patch/looks88.json are numerical approximations fitted to the references above; if you need certainty
+in patch/looks94.json are numerical approximations fitted to the references above; if you need certainty
 about how the references' licences apply to such numbers, ask their authors.

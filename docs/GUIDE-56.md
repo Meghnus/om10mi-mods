@@ -1,4 +1,4 @@
-# Guide: looks, colour editors and row captions (since version 56, current in 88)
+# Guide: looks, colour editors and row captions (since version 56, current in 94)
 
 New looks, colour-named sectors, row captions and new icons.
 
@@ -41,9 +41,8 @@ This replaces the single editor that used to be on the Custom page. **Reset** no
 page (see section B). The colour wheel (ART position of the mode dial) is separate: see
 [GUIDE-COLOR-WHEEL.md](GUIDE-COLOR-WHEEL.md).
 
-**Known issues in version 88.** The help text of one button-function option reads "Sector Sat". In the SCP, for
-the film looks, Sharpness / Contrast / Saturation values set on the OK adjust screen may not be shown on the SCP
-tile; this is being investigated.
+**Version 94.** The RAW Data Edit Custom1 / Custom2 Sector / Hue / Sat / Light rows (which had no effect in 88) work.
+Known: the help text of one button-function option reads "Sector Sat".
 
 ## B. Do once after installing
 

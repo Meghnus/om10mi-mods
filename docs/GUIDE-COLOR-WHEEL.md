@@ -79,3 +79,8 @@ The values in 2 to 4 are starting points, not tested recipes. Adjust by eye.
 - Never flash an image from another camera model.
 - If the camera misbehaves: turn it off (remove the battery if it is frozen). Hold OK while turning it on with the mode dial on P (update mode). Flash the **official** firmware (OM System update tool) or the previous release.
 - This mod does not touch the camera except through the normal firmware update.
+
+## Version 94 notes
+
+- White balance can be set inside Color Creator. Entering Color Creator resets WB to Auto once, like the stock camera.
+- In the viewfinder the wheel is centred (approximately, within a few pixels); the LCD is unchanged.

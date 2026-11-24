@@ -1,0 +1,221 @@
+{
+ "format": "om10mi-look",
+ "version": 2,
+ "target": "E113",
+ "generator": {
+  "name": "om10mi-lut-import",
+  "version": "0.1"
+ },
+ "looks": [
+  {
+   "name": "Teal Orange",
+   "slot": 9,
+   "source": {
+    "type": "cube",
+    "name": "teal_orange.cube",
+    "licence": "CC0-1.0",
+    "sha256": "b6e5f7b74f59e68a4ae73d60edd792bb26ff78ede265b7350a75e0f4f6620214",
+    "space": "display",
+    "title": "teal_orange (synthetic, CC0)",
+    "approximate": false,
+    "requires_file": true
+   },
+   "base": {
+    "mode": "Natural",
+    "candidate": "stock Natural",
+    "stage": "refit",
+    "ranking": [
+     {
+      "candidate": "stock Vivid",
+      "mode": "Vivid",
+      "dE": 5.158,
+      "pct_lt5": 55.9,
+      "dE_fit": 4.723,
+      "stage": "refit"
+     },
+     {
+      "candidate": "look Gold200",
+      "mode": "Portrait",
+      "dE": 5.522,
+      "pct_lt5": 49.8,
+      "dE_fit": 4.674,
+      "stage": "refit"
+     },
+     {
+      "candidate": "stock Natural",
+      "mode": "Natural",
+      "dE": 5.539,
+      "pct_lt5": 50.9,
+      "dE_fit": 4.666,
+      "stage": "refit"
+     },
+     {
+      "candidate": "look Pro Neg Hi",
+      "mode": "Natural",
+      "dE": 5.559,
+      "pct_lt5": 49.7,
+      "dE_fit": null,
+      "stage": "stock"
+     },
+     {
+      "candidate": "stock Portrait",
+      "mode": "Portrait",
+      "dE": 5.631,
+      "pct_lt5": 50.6,
+      "dE_fit": null,
+      "stage": "stock"
+     },
+     {
+      "candidate": "look Pro Neg Std",
+      "mode": "Portrait",
+      "dE": 5.646,
+      "pct_lt5": 49.2,
+      "dE_fit": null,
+      "stage": "stock"
+     },
+     {
+      "candidate": "look Provia",
+      "mode": "Portrait",
+      "dE": 5.917,
+      "pct_lt5": 42.9,
+      "dE_fit": null,
+      "stage": "stock"
+     },
+     {
+      "candidate": "stock Muted",
+      "mode": "Muted",
+      "dE": 5.95,
+      "pct_lt5": 39.7,
+      "dE_fit": null,
+      "stage": "stock"
+     },
+     {
+      "candidate": "look Reala Ace",
+      "mode": "Vivid",
+      "dE": 5.952,
+      "pct_lt5": 44.0,
+      "dE_fit": null,
+      "stage": "stock"
+     },
+     {
+      "candidate": "look Portra400",
+      "mode": "Portrait",
+      "dE": 6.094,
+      "pct_lt5": 42.8,
+      "dE_fit": null,
+      "stage": "stock"
+     },
+     {
+      "candidate": "look Eterna",
+      "mode": "Muted",
+      "dE": 6.143,
+      "pct_lt5": 39.3,
+      "dE_fit": null,
+      "stage": "stock"
+     },
+     {
+      "candidate": "look Astia",
+      "mode": "Muted",
+      "dE": 6.204,
+      "pct_lt5": 42.1,
+      "dE_fit": null,
+      "stage": "stock"
+     },
+     {
+      "candidate": "look Nostalgic Neg",
+      "mode": "Muted",
+      "dE": 6.427,
+      "pct_lt5": 35.0,
+      "dE_fit": null,
+      "stage": "stock"
+     },
+     {
+      "candidate": "look Velvia",
+      "mode": "Muted",
+      "dE": 6.516,
+      "pct_lt5": 34.6,
+      "dE_fit": null,
+      "stage": "stock"
+     },
+     {
+      "candidate": "look Classic Chrome",
+      "mode": "Vivid",
+      "dE": 6.587,
+      "pct_lt5": 34.0,
+      "dE_fit": null,
+      "stage": "stock"
+     },
+     {
+      "candidate": "look Colorist Severn @80%",
+      "mode": "Portrait",
+      "dE": 7.189,
+      "pct_lt5": 31.7,
+      "dE_fit": null,
+      "stage": "stock"
+     },
+     {
+      "candidate": "look CineStill 800T @80%",
+      "mode": "Portrait",
+      "dE": 7.361,
+      "pct_lt5": 29.3,
+      "dE_fit": null,
+      "stage": "stock"
+     },
+     {
+      "candidate": "look Classic Neg",
+      "mode": "Vivid",
+      "dE": 7.745,
+      "pct_lt5": 16.3,
+      "dE_fit": null,
+      "stage": "stock"
+     },
+     {
+      "candidate": "look Bleach Bypass",
+      "mode": "Vivid",
+      "dE": 8.392,
+      "pct_lt5": 15.8,
+      "dE_fit": null,
+      "stage": "stock"
+     },
+     {
+      "candidate": "look Kodachrome64h",
+      "mode": "Portrait",
+      "dE": 9.567,
+      "pct_lt5": 13.4,
+      "dE_fit": null,
+      "stage": "stock"
+     },
+     {
+      "candidate": "look Ektar100",
+      "mode": "Portrait",
+      "dE": 9.978,
+      "pct_lt5": 12.9,
+      "dE_fit": null,
+      "stage": "stock"
+     }
+    ],
+    "tie_dE": 0.1
+   },
+   "fit": {
+    "model": "pc5-local",
+    "mode": "Natural",
+    "matrix_orf": [
+     478,
+     -181,
+     -41,
+     -97,
+     452,
+     -99,
+     15,
+     -185,
+     426
+    ],
+    "predicted": {
+     "dE": 4.666,
+     "scenes": "owner reference scenes (private)"
+    }
+   },
+   "notes": "Synthetic CC0 teal/orange table; ranking and matrix from the private pc5 model (stage 1 + quick refit)."
+  }
+ ]
+}

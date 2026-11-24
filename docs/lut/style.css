@@ -1,0 +1,18 @@
+body { font: 14px/1.4 system-ui, sans-serif; margin: 16px auto; max-width: 1280px; padding: 0 12px; background: #1b1d21; color: #ddd; }
+h1 { font-size: 20px; } h1 small { font-size: 12px; color: #888; font-weight: normal; }
+h2 { font-size: 15px; margin: 18px 0 6px; border-bottom: 1px solid #444; padding-bottom: 3px; }
+section { margin-bottom: 8px; }
+.note { color: #9aa; font-size: 12px; } .info { color: #9c9; font-size: 12px; margin: 4px 0; }
+button, select, input { background: #2b2e34; color: #ddd; border: 1px solid #555; padding: 3px 8px; border-radius: 3px; }
+button { cursor: pointer; } button:hover { background: #3a3e46; }
+table { border-collapse: collapse; font-size: 12px; } th, td { padding: 2px 10px; text-align: left; border-bottom: 1px solid #333; }
+td:nth-child(n+4) { text-align: right; font-variant-numeric: tabular-nums; }
+tbody tr { cursor: pointer; } tbody tr:hover { background: #2a2d33; } tr.sel { background: #35507a !important; }
+.triple { display: flex; gap: 8px; flex-wrap: wrap; } figure { margin: 0; flex: 1 1 380px; } canvas { width: 100%; image-rendering: auto; background: #000; }
+figcaption { font-size: 12px; color: #999; }
+textarea { background: #15161a; color: #cde; width: 100%; font: 11px monospace; }
+pre { background: #15161a; padding: 6px; max-height: 200px; overflow: auto; font-size: 11px; }
+.fitprogress div { margin: 2px 0; font-size: 12px; } .fitprogress .fn { display: inline-block; min-width: 130px; } .fitprogress progress { width: 240px; vertical-align: middle; }
+
+.warn { background: #2a2418; border: 1px solid #6b5a2a; padding: 6px 10px; font-size: 12px; color: #e6d9b0; } .warn2 { color: #e6b87a; font-size: 12px; }
+footer { margin-top: 24px; } footer a, .warn a, .note a { color: #8cb4ff; }

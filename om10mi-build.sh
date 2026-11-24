@@ -1,5 +1,5 @@
 #!/bin/sh
-# Builds the version 88 card file (Linux: ./om10mi-build.sh).
+# Builds the version 94 card file (Linux: ./om10mi-build.sh).
 cd "$(dirname "$0")" || exit 1
 
 PY=""

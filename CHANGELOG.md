@@ -1,21 +1,32 @@
 # Changes
 
-## 88 (current release)
+## 94 (current release)
 
-The builder produces this version; the result must have sha1 `7f35e97bfc4d185a18e15be99f9292bd56643e0a`.
+The builder produces this version; the result must have sha1 `baf96f07b86f40aa91bb100a3658f64d9ed4dcf2`.
 
-New in 88 compared with 87:
-- **Per-look colour editor on each look's own page.** In Picture Mode, highlight a colour look and press the
-  **right arrow**: the page has **User Hue** (On / Off / Reset), **Sector**, **Hue**, **Sector Sat** and
-  **Lightness**. The edit applies to that look only. Acros has no such page. This replaces the single editor
-  that used to sit on the Custom page; **User Hue Reset** is now on a look's right-arrow page. See
-  [docs/GUIDE-56.md](docs/GUIDE-56.md), section "Per-look colour editor".
-- The builder now makes version 88 only (`patch/looks88.json`).
+New in 94 compared with 88:
+- **RAW Data Edit bank rows work.** The Custom1 / Custom2 Sector / Hue / Sat / Light rows now change the developed
+  picture. Version 88 had a known problem there; it is fixed.
+- **Colour wheel centred in the EVF.** Approximate (within a few pixels); the LCD is unchanged.
+- **White balance can be set inside Color Creator.** It resets to Auto once when you enter Color Creator, like the stock camera.
+- **SCP Contrast / Sharpness / Saturation sync** with the look's own values, and **per-look C / S / Sat rows**.
+- **Optional look pack builder** (`looktool/`): replace looks from a `.cube` / `.xmp`, rename looks, reorder the Picture Mode list
+  (also behind an anchor row such as Gold 200). Browser pages for it in `docs/lut/`
+  ([look list manager](https://meghnus.github.io/om10mi-mods/lut/panel.html)). No firmware is stored in the tool; it works on your own
+  built image. CC0 example LUTs and an example pack are included. See [looktool/README.md](looktool/README.md).
+- The builder now makes version 94 only (`patch/looks94.json`).
 
-Known issues in 88:
+Known limits in 94:
+- EVF centring of the colour wheel is approximate.
+- **Hiding looks is not available** (not proven on a camera; the look pack builder and the web page refuse it).
 - The help text of one button-function option reads "Sector Sat".
-- In the SCP (super control panel), for the film looks, Sharpness / Contrast / Saturation values set on the OK
-  adjust screen may not be shown on the SCP tile. This is being investigated.
+- The look pack builder fits a matrix plus tone curves, so a look is an approximation of the LUT.
+
+## 88 (superseded)
+
+Per-look colour editor on each look's own page (User Hue On / Off / Reset, Sector, Hue, Sector Sat, Lightness); User Hue Reset
+moved there from the Custom page. Known issues in 88: RAW Data Edit bank Sector / Hue / Sat / Light rows had no effect
+(fixed in 94); help text of one button-function option reads "Sector Sat".
 
 Carried over from 87:
 - Colour wheel in Color Creator (ART position of the mode dial): 12 sectors, Hue / Saturation / Lightness

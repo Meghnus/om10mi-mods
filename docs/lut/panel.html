@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' blob: data:; style-src 'self'; script-src 'self'; worker-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<title>Look list manager for the E-M10 Mark I look pack (om10mi-lut panel)</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="panel.css">
+</head>
+<body>
+<h1>Look list manager &rarr; E-M10 Mk I look pack <small>om10mi-lut panel, model cm-v2-web1</small></h1>
+<p class="note">Everything runs in this page. Your LUTs and photos are read from disk into memory and never uploaded (CSP: no external connections). The page writes a <b>pack file</b> (look list order, names, and our own fitted numbers); the image itself is built later on <b>your own PC</b> by <code>looktool/om10mi_look.py --pack</code> from your own copy of the firmware. Scores are <b>model predictions</b>, not camera results. Single-LUT page: <a href="index.html">index.html</a>.</p>
+<p class="warn"><b>Disclaimer.</b> Unofficial, for the Olympus OM-D E-M10 Mark I (model 0x1130, firmware 1.4) only. This page never talks to a camera and does not contain, produce or distribute any firmware. Turning a pack into a firmware image is done on your own PC with your own copy of the official firmware (<a href="https://github.com/Meghnus/om10mi-mods">om10mi-mods</a>); flashing a modified image is at your own risk, can make the camera unusable and voids support. Scores are model predictions, not camera results. No affiliation with or endorsement by OM Digital Solutions / Olympus.</p>
+<p>Status: <span id="status">loading...</span></p>
+
+<section>
+<h2>1. Pack</h2>
+<p>Pack name <input id="pname" size="24" maxlength="40" placeholder="optional, 40 characters"> &nbsp;
+Base image release <select id="rel"></select>
+sha1 <input id="sha1" size="44" maxlength="40" spellcheck="false" placeholder="40 hex digits of the exact image the pack is for"></p>
+<p class="note">The sha1 pins the exact release image on your PC; the builder refuses any other image (never use an image of another camera model). The sha1 of the version 94 image is preselected; the builder prints it when it finishes (<code>om10mi.py build</code>).</p>
+<p><button id="export">Export pack JSON</button> <label class="btn">Import pack JSON <input type="file" id="import" accept=".json,application/json"></label>
+<button id="share">Share link</button> <button id="cmd">Show build command</button> <button id="reset">Reset list</button></p>
+<div id="problems" class="problems"></div>
+<pre id="out" class="out" hidden></pre>
+</section>
+
+<section>
+<h2>2. Look list (Picture Mode order)</h2>
+<p class="note">Order of the Picture Mode menu, the SCP picker, the Live Control strip and dial stepping. Drag the handle, use the arrows, or focus a row and press <kbd>Alt</kbd>+<kbd>Up</kbd> / <kbd>Alt</kbd>+<kbd>Down</kbd>. Greyed rows are stock items (movable, not editable). The eye (hide) is disabled: hiding has not been proven on a camera, so the builder refuses it. Names are written into the menu; the counter shows the capacity of the slot. i-Enhance is always first and cannot move.</p>
+<div id="list" class="list" role="list" aria-label="Look list"></div>
+</section>
+
+<section id="editor" hidden>
+<h2>3. Look editor: <span id="ed_title"></span></h2>
+<p class="note">Stage A path: import a LUT (<code>.cube</code> or Adobe <code>.xmp</code>); the page fits our camera model to it in the base mode of this slot. Recipe sliders (hue / saturation / tone curves by hand) are <b>not</b> part of this stage; use the LUT / XMP import.</p>
+<p><input type="file" id="file" accept=".cube,.xmp"> or sample (CC0):
+<button data-sample="teal_orange.cube">teal_orange</button>
+<button data-sample="matte_fade.cube">matte_fade</button>
+<button data-sample="vivid_pop.cube">vivid_pop</button>
+&nbsp; Table applied in: <select id="space"><option value="display">display sRGB</option><option value="prophoto">ProPhoto (sRGB gamma)</option></select></p>
+<p>Licence of your file: <select id="lic"><option>unknown</option><option>own work</option><option>CC0-1.0</option><option>CC BY 4.0</option><option>CC BY-SA 4.0</option><option>CC BY-NC-SA 4.0</option><option>all rights reserved</option></select>
+Author / source (credit): <input id="lic_by" size="46" maxlength="80" placeholder="e.g. Pat David, Pavlov Dmitry, Michael Ezra (RawTherapee Film Simulation Collection)">
+<span id="licnote" class="warn2"></span></p>
+<p id="lutinfo" class="info"></p>
+<p id="copyrow" hidden>Copy a look from another slot (same base mode): <select id="copysel"></select> <button id="copy">Copy into this slot</button></p>
+<h3>Ranking (only <span id="ed_mode"></span> candidates can be used in this slot)</h3>
+<p id="rankinfo" class="info"></p>
+<table id="rank"><thead><tr><th>#</th><th>candidate</th><th>mode</th><th>dE00</th><th>% &lt; 5</th><th>dE after full fit</th></tr></thead><tbody></tbody></table>
+<p><button id="fit">Fit selected candidate</button> <button id="cancel" disabled>Cancel</button>
+<label><input type="checkbox" id="guard" checked> highlight-clip guard (blend the tone toward stock when a +0.5 EV probe clips more than stock + 1 pp)</label></p>
+<div id="fitprogress" class="fitprogress"></div>
+<p id="fitinfo" class="info"></p>
+<h3>Before / after</h3>
+<p class="note">Drag the divider or use the arrow keys on the picture. Left of the line: the LUT applied to the reference scenes. Right: our camera model with the fitted slot (before the fit: the stock mode of the candidate). Model prediction, not a camera result.</p>
+<canvas id="cmp" class="cmp" width="576" height="288" tabindex="0" aria-label="before after divider"></canvas>
+<p id="readout" class="info"></p>
+<p>Menu name <input id="ed_name" size="20" maxlength="30"> <span id="ed_count" class="count"></span> &nbsp;
+Icon <select id="ed_icon"><option value="roll">film roll (new icon, no text)</option><option value="keep">keep the old icon and label</option></select> &nbsp;
+Note <input id="ed_notes" size="40" maxlength="200" placeholder="optional, 200 characters"></p>
+<p><button id="accept">Accept into this slot</button> <button id="unlook">Remove look (back to stock)</button> <button id="close">Close editor</button> <span id="ed_msg" class="info"></span></p>
+</section>
+
+<section><h2>Log</h2><pre id="log"></pre></section>
+<footer>
+<h2>Licences and credits</h2>
+<ul class="note">
+<li>This page and its scripts: Apache-2.0 (LICENSE). The model numbers <code>model-cm-v2-web1.json</code> (our own measurements of the camera's output behaviour, fitted to camera JPEGs) and the look files and packs made from them: CC BY-NC-SA 4.0 (LICENSE-DATA), credit &ldquo;om10mi-mods, Meghnus, github.com/Meghnus/om10mi-mods&rdquo;. The model contains no firmware table or image; neither does a pack.</li>
+<li>Built-in sample tables <code>teal_orange</code>, <code>matte_fade</code>, <code>vivid_pop</code>: made for this project, CC0 1.0.</li>
+<li>Third-party tables you load stay in your browser (read from disk, never uploaded, no network use: connect-src is limited to this site). A pack records each table's name, sha256 and the licence/credit you enter; it never embeds the table. Tables under <b>CC BY / CC BY-SA</b> (for example Fuji film HaldCLUTs of the RawTherapee Film Simulation Collection, CC BY-SA 4.0, by Pat David, Pavlov Dmitry, Michael Ezra and others) need that credit wherever you share the pack, a share link or the numbers; CC BY-SA makes them ShareAlike. A share link holds the pack text in the URL fragment (never sent to a server by this page); whoever you give the link to receives those numbers and credits.</li>
+<li>List manager and before/after divider ideas from the Caduceus Control Panel (cakelesscoder/caduceus-ep7), Apache-2.0. Only the idea is taken; this page shares no code or data with it.</li>
+<li>Olympus, OM-D, E-M10 and Fujifilm film names are trademarks of their owners and appear only to describe compatibility or as names of colour looks.</li>
+</ul>
+<p class="note">Related projects: <a href="https://github.com/Meghnus/om10mi-mods">om10mi-mods</a> (the builder and the look slots) and <a href="https://github.com/Meghnus/oly-truepic-harness">oly-truepic-harness</a> (the firmware analysis harness). Many people asked for ports to other OM / Olympus cameras: use these tools.</p>
+</footer>
+<script type="module" src="panel.js"></script>
+</body>
+</html>

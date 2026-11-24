@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' blob: data:; style-src 'self'; script-src 'self'; worker-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<title>LUT to E-M10 Mark I camera look (om10mi-lut)</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<h1>LUT &rarr; E-M10 Mk I camera look <small>om10mi-lut, model cm-v2-web1</small></h1>
+<p class="note">Everything runs in this page. Your LUT and photos are read from disk into memory and never uploaded (CSP: no external connections). The model holds only our own measured per-mode parameters. Scores are <b>model predictions</b>, not camera results.</p>
+<p class="note"><b>New:</b> <a href="panel.html">look list manager</a> (reorder and rename the Picture Mode list, replace several looks, export a pack file for <code>looktool/om10mi_look.py --pack</code>). This page stays the single-LUT workbench.</p>
+<p class="warn"><b>Disclaimer.</b> Unofficial, for the Olympus OM-D E-M10 Mark I (model 0x1130, firmware 1.4) only. This page never talks to a camera and does not contain, produce or distribute any firmware. It writes a small <i>look file</i> (our own fitted numbers). Turning that file into a firmware image is done on your own PC with your own copy of the official firmware (<a href="https://github.com/Meghnus/om10mi-mods">om10mi-mods</a>); flashing a modified image is at your own risk, can make the camera unusable and voids support. Scores are model predictions, not camera results. No affiliation with or endorsement by OM Digital Solutions / Olympus.</p>
+<p>Status: <span id="status">loading...</span></p>
+
+<section>
+<h2>1. Target LUT</h2>
+<p><input type="file" id="file" accept=".cube,.xmp"> or sample (CC0):
+<button data-sample="teal_orange.cube">teal_orange</button>
+<button data-sample="matte_fade.cube">matte_fade</button>
+<button data-sample="vivid_pop.cube">vivid_pop</button></p>
+<p>Table applied in: <select id="space"><option value="display">display sRGB</option><option value="prophoto">ProPhoto (sRGB gamma)</option></select>
+&nbsp; Reference:
+<label><input type="radio" name="ref" id="ref_syn" checked> synthetic set</label>
+<label><input type="radio" name="ref" id="ref_jpeg"> my picture <input type="file" id="jpeg" accept="image/jpeg,image/png"></label></p>
+<p>Licence of your file: <select id="lic"><option>unknown</option><option>own work</option><option>CC0-1.0</option><option>CC BY 4.0</option><option>CC BY-SA 4.0</option><option>CC BY-NC-SA 4.0</option><option>all rights reserved</option></select>
+Author / source (credit): <input id="lic_by" size="46" maxlength="80" placeholder="e.g. Pat David, Pavlov Dmitry, Michael Ezra (RawTherapee Film Simulation Collection)">
+<span id="licnote" class="warn2"></span></p>
+<p id="lutinfo" class="info"></p>
+</section>
+
+<section>
+<h2>2. Base ranking (stage 1, all candidates)</h2>
+<p id="rankinfo" class="info"></p>
+<table id="rank"><thead><tr><th>#</th><th>candidate</th><th>mode</th><th>dE00</th><th>% &lt; 5</th><th>dE after matrix refit</th><th>dE after full fit</th></tr></thead><tbody></tbody></table>
+<p><button id="refit">Quick matrix refit of the selected row</button> <span id="refitinfo" class="info"></span></p>
+<h3>Full fit (matrix + tone curves, in Web Workers)</h3>
+<p><button id="fit">Fit selected row</button> <button id="fit3">Fit top 3 rows in parallel</button> <button id="cancel" disabled>Cancel</button>
+<label><input type="checkbox" id="guard" checked> highlight-clip guard (blend the tone toward stock when a +0.5 EV probe clips more than stock + 1 pp)</label></p>
+<div id="fitprogress" class="fitprogress"></div>
+<p id="fitinfo" class="info"></p>
+</section>
+
+<section>
+<h2>3. Preview</h2>
+<p id="previewinfo" class="info"></p>
+<div class="triple">
+<figure><canvas id="c_target"></canvas><figcaption>Target: LUT applied to the base picture</figcaption></figure>
+<figure><canvas id="c_sim"></canvas><figcaption id="c_sim_label">Camera model</figcaption></figure>
+<figure><canvas id="c_heat"></canvas><figcaption>dE00 map (black 0 ... red 10)</figcaption></figure>
+</div>
+<p><button id="bench">Measure timings</button> <span id="benchinfo" class="info"></span></p>
+</section>
+
+<section>
+<h2>4. Look file (v2)</h2>
+<p>Name <input id="lutname" size="14" value="Web Look" maxlength="17"> <span class="note">(5 characters fit every slot; the checker reports the rest)</span> Slot <select id="slot"><option value="">ask in builder</option><option>1</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option><option>11</option><option>12</option><option>13</option><option>14</option><option>15</option><option>16</option><option>17</option><option>18</option></select>
+<button id="mk">Show</button> <button id="dl">Download look file</button> <button id="dlcube">Download 33^3 .cube of the target</button></p>
+<textarea id="lookjson" rows="14" cols="110" readonly></textarea>
+<p class="note">Build the image with <code>python looktool/om10mi_look.py --look FILE --slot N --base YOUR_E1139999.BIN --out DIR</code> (see README). The look file names your LUT (name, sha256) but never embeds it. Validate with <code>python fw/lut_stage1/lookfile/lookfile_check.py FILE</code>.</p>
+</section>
+
+<section><h2>Log</h2><pre id="log"></pre></section>
+<footer>
+<h2>Licences and credits</h2>
+<ul class="note">
+<li>This page and its scripts: Apache-2.0 (LICENSE). The model numbers <code>model-cm-v2-web1.json</code> (our own measurements of the camera's output behaviour, fitted to camera JPEGs) and the look files made from them: CC BY-NC-SA 4.0 (LICENSE-DATA), credit &ldquo;om10mi-mods, Meghnus, github.com/Meghnus/om10mi-mods&rdquo;. The model contains no firmware table or image.</li>
+<li>Built-in sample tables <code>teal_orange</code>, <code>matte_fade</code>, <code>vivid_pop</code>: made for this project, CC0 1.0.</li>
+<li>Third-party tables you load stay in your browser (read from disk, never uploaded, no network use: connect-src is limited to this site). The look file records the table's name, sha256 and the licence/credit you enter above; it never embeds the table. Tables under <b>CC BY / CC BY-SA</b> (for example Fuji film HaldCLUTs of the RawTherapee Film Simulation Collection, CC BY-SA 4.0, by Pat David, Pavlov Dmitry, Michael Ezra and others) need that credit wherever you share the look file or numbers; CC BY-SA makes them ShareAlike.</li>
+<li>Olympus, OM-D, E-M10 and Fujifilm film names are trademarks of their owners and appear only to describe compatibility or as names of colour looks.</li>
+</ul>
+<p class="note">Related projects: <a href="https://github.com/Meghnus/om10mi-mods">om10mi-mods</a> (the builder and the look slots) and <a href="https://github.com/Meghnus/oly-truepic-harness">oly-truepic-harness</a> (the firmware analysis harness). Many people asked for ports to other OM / Olympus cameras: use these tools.</p>
+</footer>
+<script type="module" src="app.js"></script>
+</body>
+</html>

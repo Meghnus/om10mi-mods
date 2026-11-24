@@ -1,0 +1,34 @@
+{
+ "version": 1,
+ "note": "Layout facts of the Picture Mode list of the E-M10 Mark I look images (version 94): slot -> stock look name, base picture mode, menu-name capacity (lookbuild/names88.NAME_CAP; slot 2 = 5), writable flag. Stock look names are the model's names for the shipped looks. No firmware bytes.",
+ "slots": {
+  "1": {"stock": "Eterna", "mode": "Muted", "cap": 6, "writable": true},
+  "2": {"stock": "Acros", "mode": "Monotone", "cap": 5, "writable": false},
+  "3": {"stock": "Provia", "mode": "Portrait", "cap": 7, "writable": true},
+  "4": {"stock": "Velvia", "mode": "Muted", "cap": 7, "writable": true},
+  "5": {"stock": "Astia", "mode": "Muted", "cap": 5, "writable": true},
+  "6": {"stock": "Classic Chrome", "mode": "Vivid", "cap": 14, "writable": true},
+  "7": {"stock": "Classic Neg", "mode": "Vivid", "cap": 11, "writable": true},
+  "8": {"stock": "Pro Neg Std", "mode": "Portrait", "cap": 11, "writable": true},
+  "9": {"stock": "Pro Neg Hi", "mode": "Natural", "cap": 11, "writable": true},
+  "10": {"stock": "Nostalgic Neg", "mode": "Muted", "cap": 13, "writable": true},
+  "11": {"stock": "Reala Ace", "mode": "Vivid", "cap": 9, "writable": true},
+  "12": {"stock": "Bleach Bypass", "mode": "Vivid", "cap": 13, "writable": true},
+  "13": {"stock": "CineStill 800T", "mode": "Portrait", "cap": 15, "writable": true},
+  "14": {"stock": "Severn", "mode": "Portrait", "cap": 8, "writable": true},
+  "15": {"stock": "Portra400", "mode": "Portrait", "cap": 10, "writable": true},
+  "16": {"stock": "Kodachrome64h", "mode": "Portrait", "cap": 17, "writable": true},
+  "17": {"stock": "Ektar100", "mode": "Portrait", "cap": 24, "writable": true},
+  "18": {"stock": "Gold200", "mode": "Portrait", "cap": 8, "writable": true}
+ },
+ "stock_items": ["Vivid", "Natural", "Muted", "Portrait", "Monotone", "Custom", "e-Portrait", "Color Creator",
+  "ART1", "ART2", "ART3", "ART4", "ART5", "ART6", "ART7", "ART8", "ART9", "ART10", "ART11", "ART12"],
+ "stock_modes": {"Vivid": "Vivid", "Natural": "Natural", "Muted": "Muted", "Portrait": "Portrait", "Monotone": "Monotone"},
+ "base_order": ["Vivid", "Natural", "Muted", "Portrait", 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18,
+  "Monotone", "Custom", "e-Portrait", "Color Creator",
+  "ART1", "ART2", "ART3", "ART4", "ART5", "ART6", "ART7", "ART8", "ART9", "ART10", "ART11", "ART12"],
+ "releases": [
+  {"name": "v94", "sha1": "baf96f07b86f40aa91bb100a3658f64d9ed4dcf2"}
+ ],
+ "max_looks": 17
+}

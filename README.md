@@ -1,4 +1,4 @@
-**Guides:** [Install](INSTALL.md) · [Color Wheel](docs/GUIDE-COLOR-WHEEL.md) · [Development](docs/DEVELOPMENT.md)
+**Guides:** [Install](INSTALL.md) · [Color Wheel](docs/GUIDE-COLOR-WHEEL.md) · [Look pack builder](looktool/README.md) · [Development](docs/DEVELOPMENT.md)
 
 # om10mi-mods
 
@@ -16,7 +16,7 @@ you get.
 ## Quick start
 
 1. Download the release from the [Releases page](https://github.com/Meghnus/om10mi-mods/releases):
-   `om10mi-build.exe` (Windows, no Python needed) or `om10mi-mods-v88.zip` (any system, needs Python 3.10+).
+   `om10mi-build.exe` (Windows, no Python needed) or `om10mi-mods-v94.zip` (any system, needs Python 3.10+).
 2. Run it: double-click `om10mi-build.exe`, or unzip and double-click `om10mi-build.bat` (Windows) or
    `om10mi-build.command` (macOS), or run `./om10mi-build.sh` (Linux).
 3. Read and accept the OM Digital Solutions licence it shows. The builder downloads the official firmware 1.4
@@ -37,7 +37,22 @@ This repository contains **no firmware**. It holds a builder (`om10mi.py`) and a
 server to your PC, applies the edits, checks the result byte for byte, and writes one file that is ready to copy
 to an SD card. The firmware itself remains the property of OM Digital Solutions.
 
-There is a single release: **version 88**. It already includes everything listed in the version history below.
+There is a single release: **version 94**. It already includes everything listed in the version history below.
+
+## What is new in version 94
+
+- **RAW Data Edit bank rows work.** The Custom1 / Custom2 Sector / Hue / Sat / Light rows now change the developed picture
+  (version 88 had a known problem there; it is fixed).
+- **Colour wheel centred in the EVF** (it was off to the side with the viewfinder). The centring is approximate: it is
+  within a few pixels, not exact.
+- **White balance can be set inside Color Creator.** Like on the stock camera, WB resets to Auto once when you enter
+  Color Creator.
+- **SCP Contrast / Sharpness / Saturation stay in sync** with the look's own rows, and every look has its own C / S / Sat rows.
+- **Optional: look pack builder.** Replace looks with your own from a `.cube` / `.xmp`, rename them, and put them in
+  any order (for example after Gold 200). It runs on your PC on the image you built yourself:
+  [looktool/README.md](looktool/README.md). The browser pages that make the pack:
+  **[look list manager and LUT fitter](https://meghnus.github.io/om10mi-mods/lut/panel.html)** (files in `docs/lut/`).
+- Known limits: EVF centring is approximate; **hiding looks is not available** (not proven on a camera, so the builder refuses it).
 
 ## Colour wheel (new in version 87)
 
@@ -58,7 +73,7 @@ each with Hue, Saturation and Lightness (-7 to +7), with a live preview that mat
 
 Full key map and example recipes: [Color Wheel guide](docs/GUIDE-COLOR-WHEEL.md).
 
-## What version 88 contains
+## What version 94 contains
 
 **Film looks**
 - 14 film looks, each with its own colour matrix and tone curve.
@@ -70,14 +85,14 @@ Full key map and example recipes: [Color Wheel guide](docs/GUIDE-COLOR-WHEEL.md)
 - Acros in RAW Data Edit Custom is black and white again.
 
 **Colour editors**
-- **Colour wheel** in Color Creator (above).
+- **Colour wheel** in Color Creator (above), centred in the viewfinder, with white balance settable inside Color Creator.
 - Per-sector colour editor: Hue, Saturation and Lightness for 12 colour sectors (Green, Amber, Teal, Cyan,
   Azure, Blue, Magenta, Indigo, Olive, Red, Orange, Yellow). The Sector row shows colour names instead of a dash.
 - **Per-look colour editor** (new in 88): in Picture Mode, highlight a colour look and press the right arrow. The
   User Hue page has User Hue (On / Off / Reset), Sector, Hue, Sector Sat and Lightness, and the edit applies to
   that look only. Acros has no such page. Details in [docs/GUIDE-56.md](docs/GUIDE-56.md).
 - Looks can be chosen in RAW Data Edit Custom1 and Custom2; each bank has its own Contrast, Sharpness,
-  Saturation, Gradation and Sector/Hue/Sat/Light rows.
+  Saturation, Gradation and Sector/Hue/Sat/Light rows (the Sector/Hue/Sat/Light rows work since version 94).
 - Every row has its own title and caption (for example "Gradation High Key"; an unchanged row reads
   "Picture Mode", meaning it follows the Picture Mode setting) and a new icon.
 
@@ -150,18 +165,20 @@ shown yet.
 - **Lightroom shows a colour temperature about 250-300 K lower than the camera.** This is stock behaviour on
   the E-M10 (Lightroom re-derives Kelvin through Adobe's profile); this project does not change the
   white-balance data ([issue #3](https://github.com/Meghnus/om10mi-mods/issues/3)).
-- **Version 88:** the help text of one button-function option reads "Sector Sat". In the SCP, for the film
-  looks, Sharpness / Contrast / Saturation values set on the OK adjust screen may not be shown on the SCP tile;
-  this is being investigated.
+- **Version 94:** the help text of one button-function option reads "Sector Sat". The colour wheel is centred in
+  the EVF only approximately. Hiding looks (look pack builder) is not available.
+- **Look pack builder:** optional, approximate (a colour matrix plus tone curves per look, not the LUT itself), and
+  every look must keep the base picture mode of its slot. Hand-made packs are tested on the PC and on the author's
+  camera for the cases listed in [looktool/README.md](looktool/README.md); other combinations are less tried.
 
 ## Version history
 
-Only milestones that were tried on a camera. The builder produces **only version 88**, which contains all
+Only milestones that were tried on a camera. The builder produces **only version 94**, which contains all
 earlier content; older versions are not offered.
 
 **About the version numbers.** A version number is not a major/minor release number and does not measure how
 many features were added. It counts test builds: every image that was built, audited and staged for a camera
-trial gets the next number, including small fixes and builds that were rejected. A jump from 56 to 88
+trial gets the next number, including small fixes and builds that were rejected. A jump from 56 to 94
 therefore means many rounds of fixing and testing (mostly on the colour wheel), not a long list of new features.
 Please mention the version number when you report an issue.
 
@@ -175,14 +192,30 @@ Please mention the version number when you report an issue.
 | 56 | 51 + 4 new looks (Portra 400, Kodachrome 64, Ektar 100, Gold 200); per-bank Contrast/Sharpness/Saturation/Gradation and Sector/Hue/Sat/Light in RAW Data Edit; Highlight/Shadow/Contrast/Gradation work on looks; colour-named Sector; row titles; new icons; SCP Contrast/Sharpness on looks; Acros fix | Two independent audits passed; owner's field test: works well |
 | 57-86 | Colour wheel: internal test builds | Tested on the owner's camera; not released |
 | 87 | 56 + colour wheel in Color Creator (12 sectors, H/S/L), on-screen hint, COLOR WHEEL mode guide, own icons for the 4 new looks, Contrast/Gradation stability fix | Tested by running the camera code in a PC emulator, independently reviewed, then field-tested on the owner's camera |
-| **88** | 87 + per-look colour editor on each colour look's right-arrow page (User Hue On/Off/Reset, Sector, Hue, Sector Sat, Lightness); User Hue Reset moved there from the Custom page | Field-tested on the owner's camera. **This is what the builder makes.** |
+| 88 | 87 + per-look colour editor on each colour look's right-arrow page (User Hue On/Off/Reset, Sector, Hue, Sector Sat, Lightness); User Hue Reset moved there from the Custom page | Field-tested on the owner's camera; known RAW Data Edit bank-row problem (fixed in 94) |
+| **94** | 88 + RAW Data Edit bank rows fixed, colour wheel centred in the EVF, WB in Color Creator, SCP C/S/Sat sync, per-look C/S/Sat rows; optional look pack builder (`looktool/`) and web pages (`docs/lut/`) | The code was field-tested on the owner's camera (as the base of look-pack builds); the plain version 94 image is the same code without the look-pack layer. **This is what the builder makes.** |
 
-## Planned
+## Look pack builder and LUT import (optional, new in version 94)
 
-**Import of a LUT/.cube/.xmp file into a look slot of your choice.** A PC tool turns your file into an
-approximate camera look (colour matrix plus tone curve plus per-sector colour). The camera has no 3D-LUT stage, so
-this is an approximation: close for gentle film-style LUTs, weaker for extreme ones. You pick which look slot it
-replaces, preview the result by camera simulation on the PC first, then receive a new firmware file to install.
+Turn a `.cube` or Adobe Creative Profile `.xmp` into an approximate camera look, put it into a look slot of your choice,
+rename looks and change the Picture Mode order. The camera has no 3D-LUT stage, so a look is a colour matrix plus tone
+curves fitted to your LUT: close for gentle film-style LUTs, weaker for extreme ones. Two steps:
+
+1. In the browser (nothing is uploaded): the [look list manager](https://meghnus.github.io/om10mi-mods/lut/panel.html) ranks
+   the base picture modes against your LUT, fits, previews and exports a pack file
+   (the single-LUT page is [here](https://meghnus.github.io/om10mi-mods/lut/)).
+2. On your PC: `looktool/om10mi_look.py` applies the pack to the version 94 image you built from your own official firmware.
+
+Details, limits and licences: [looktool/README.md](looktool/README.md) and [docs/lut/README.md](docs/lut/README.md). Three CC0
+example LUTs and an example pack are in `looktool/examples/`. Hiding looks is not available.
+
+## Other cameras and related projects
+
+Many people asked for ports to other OM / Olympus cameras. This repository is for the E-M10 Mark I only (never flash an image
+built for another model). For other bodies use the analysis tools published separately:
+**[oly-truepic-harness](https://github.com/Meghnus/oly-truepic-harness)** (the firmware test lab behind these mods) and the
+look pack tools above. **[fenykl](https://github.com/atx/fenykl)** (MIT, atx) is a mod loader with C plugins for the E-M10 Mark II;
+it is credited where its ideas are used. No fenykl code is used in this repository yet.
 
 ## Credits
 
@@ -192,6 +225,7 @@ computed ourselves, or facts and ideas. Licences and details are in [NOTICE](NOT
 - **cakelesscoder/caduceus-ep7** (Apache-2.0): firmware mods for the E-P7; design reference for the look editor,
   HSL handling and the ends of the tone curve, and the inspiration for the colour-wheel idea.
   https://github.com/cakelesscoder/caduceus-ep7
+- **atx/fenykl** (MIT): mod loader for the E-M10 Mark II; ideas credited where used, no code used yet. https://github.com/atx/fenykl
 - **fishcu/oly_fw_analysis** (Apache-2.0): research notes on Olympus / OM System firmware (PEN-F in most depth):
   the image-processing job map and grain notes. https://github.com/fishcu/oly_fw_analysis
 - **cmdada/em10-fw** (GPL-3.0, notes on the same E-M10 Mark I v1.4 firmware): facts on the multi-core and cache
@@ -220,9 +254,10 @@ trademarks of their owners and are used only to identify things.
 
 | Part | Licence |
 |---|---|
-| Code `om10mi.py` and documentation (README, INSTALL, guides) | Apache License 2.0, see [LICENSE](LICENSE) |
-| Data: `patch/*.json` and any other look data | Creative Commons BY-NC-SA 4.0 (attribution, non-commercial, share-alike), see [LICENSE-DATA](LICENSE-DATA) |
+| Code `om10mi.py`, `looktool/`, `docs/lut/` and documentation (README, INSTALL, guides) | Apache License 2.0, see [LICENSE](LICENSE) |
+| Data: `patch/*.json`, `looktool/web/model-cm-v2-web1.json`, `docs/lut/model-cm-v2-web1.json` and any other look data | Creative Commons BY-NC-SA 4.0 (attribution, non-commercial, share-alike), see [LICENSE-DATA](LICENSE-DATA) |
 | Colour-wheel photos in `docs/img` | CC BY 4.0, by Meghnus |
+| Example LUTs `looktool/examples/*.cube` and `docs/lut/samples/*.cube` (synthetic, made by us) | CC0 1.0 |
 | Sample pictures in `docs/samples` | (c) 2026 Meghnus. All rights reserved: viewing only, no reuse. See [docs/samples/README.md](docs/samples/README.md) |
 
 The look data consists of numbers fitted to the references credited above and in [NOTICE](NOTICE), which is why
