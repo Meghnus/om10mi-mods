@@ -2,6 +2,10 @@
 
 # om10mi-mods
 
+[![Total downloads](https://img.shields.io/github/downloads/Meghnus/om10mi-mods/total?label=downloads&color=c8932e)](https://github.com/Meghnus/om10mi-mods/releases)
+[![Latest release downloads](https://img.shields.io/github/downloads/Meghnus/om10mi-mods/latest/total?label=latest%20release&color=c8932e)](https://github.com/Meghnus/om10mi-mods/releases/latest)
+[![Latest release](https://img.shields.io/github/v/release/Meghnus/om10mi-mods?label=version)](https://github.com/Meghnus/om10mi-mods/releases/latest)
+
 Extra firmware features for the **Olympus OM-D E-M10 Mark I**: film looks, colour editors, a PEN-F-style colour
 wheel, and a video recording limit of about 60 minutes.
 
