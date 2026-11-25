@@ -23,6 +23,14 @@ class LiftError(ValueError):
     pass
 
 
+def lsb(v):
+    """integer table values from float table values, the same on every platform. The fit is a floating-point computation whose last bits depend on the numpy build
+    (BLAS, SIMD, libm: native vs WebAssembly, CPU model); a value that sits on a rounding tie (the identity knot 0.5 * 1023 = 511.5 is one) would round either way.
+    Quantising to 1e-6 of a table step first removes that noise (error ~1e-11) so a tie always rounds the same way (half to even); a real value only changes
+    result if it lies within ~1e-11 of a quantisation boundary."""
+    return np.round(np.round(np.asarray(v, float) * 1e6) / 1e6).astype(np.int64)
+
+
 def pav(y, w):
     """weighted non-decreasing isotonic regression (pool adjacent violators)"""
     v, ww, cnt = [], [], []
@@ -129,7 +137,7 @@ def polish_tables(model, cam, mode, x, w, web_lab, t3, t2, nk2=NK_T2, iters=4):
         if not ok:
             break
     t2n, t3n = _tables(th, nk2)
-    return [[int(v) for v in np.round(t3n[c])] for c in range(3)], [int(v) for v in np.round(t2n)], dict(polish_cost_start=start, polish_cost_end=cost)
+    return [[int(v) for v in lsb(t3n[c])] for c in range(3)], [int(v) for v in lsb(t2n)], dict(polish_cost_start=start, polish_cost_end=cost)
 
 
 def lift_tone(model, cam, mode, orf_act, d33, h33, luma, xS, nk2=NK_T2, polish=4, q33=None):
@@ -142,7 +150,7 @@ def lift_tone(model, cam, mode, orf_act, d33, h33, luma, xS, nk2=NK_T2, polish=4
     t3 = []
     for c in range(3):
         k = _knots(pre[:, c], pre[:, c] + dd[:, c], w, K.KX)
-        t3.append([int(v) for v in np.round(k * 1023)])
+        t3.append([int(v) for v in lsb(k * 1023)])
     pre3 = cam.t3apply(t3, pre)
     f = model.fm(mode, x)
     if luma == "post":
@@ -158,7 +166,7 @@ def lift_tone(model, cam, mode, orf_act, d33, h33, luma, xS, nk2=NK_T2, polish=4
     prior = np.interp(np.linspace(0, 1, nk2), K.IDX, t2m)
     knots = _knots(pre3 @ K.W, target, w, prior)
     t2 = np.interp(np.arange(256), np.linspace(0, 255, nk2), knots)
-    t2 = [int(v) for v in np.round(np.clip(t2, 0, 1) * 1023)]
+    t2 = [int(v) for v in lsb(np.clip(t2, 0, 1) * 1023)]
     info = dict(luma=luma, t3_rms_d=float(np.sqrt(np.average((pre3 - pre - dd) ** 2, axis=0, weights=w).mean())), pixels=len(x))
     if polish:
         def web_lab(xx):

@@ -229,6 +229,7 @@ def build_pack(base_bin, pack_path, lut_dir=None, gate=B.GATE, allow_other_base=
     # ---- acceptance battery
     bat = None
     if battery:
+        log("acceptance battery: checking the written image")
         try:
             from . import accept88 as AC
         except ImportError as e:

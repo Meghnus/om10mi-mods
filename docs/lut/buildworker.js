@@ -36,3 +36,4 @@ self.onmessage = async (e) => {
     self.postMessage({ type: "fail", text: "The build engine failed (" + (err && err.message ? err.message : err) + "). Use a current desktop browser with enough free memory." });
   }
 };
+self.addEventListener("unhandledrejection", (e) => { self.postMessage({ type: "fail", text: "The build engine failed (" + (e.reason && e.reason.message ? e.reason.message : e.reason) + "). Close other tabs and try again." }); });

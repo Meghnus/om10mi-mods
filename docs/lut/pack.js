@@ -74,6 +74,12 @@ export function buildPack(L, st) {
   return { format: "om10mi-look", version: 2, target: "E113", generator: { name: "om10mi-lut-web", version: "0.2", model: "cm-v2-web1" }, pack, looks };
 }
 
+// what a pack changes in the standard image: { looks, renames, order, count } (hide is not available); count 0 = building it would give the plain version 94 image
+export function packChanges(obj) {
+  const pk = obj.pack || {}, looks = (obj.looks || []).length, renames = Object.keys(pk.renames || {}).length, order = (pk.order || []).length;
+  return { looks, renames, order, count: looks + renames + order };
+}
+
 // ---- validation (mirror of lookfile_check.check + check_pack) ---------------------------------------------------------------
 // returns { errors: [{where, msg, slot?}], warnings: [...] }
 export function validateObject(L, obj, { size = 0 } = {}) {

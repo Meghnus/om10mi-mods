@@ -12,6 +12,8 @@
 If something is wrong the page says what to do next (for example *"X" is too far from what the camera can do in Vivid: pick another base mode*) and
 builds nothing. It never touches a camera or a card. You flash at your own risk; keep your official firmware to go back.
 
+The browser and the command line give the same file for the same pack and the same base (the fit rounds its tables on a platform-independent grid, see `lift.lsb`).
+
 Prefer the command line? **Export pack (.omlook.zip)** in the panel gives one file with your looks and the exact LUT files; see below.
 
 ## Command line (Python)

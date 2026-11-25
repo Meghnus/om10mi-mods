@@ -206,7 +206,7 @@ function syncMeta() {
   $("sha_row").hidden = $("rel").value !== "custom";
 }
 function refreshExport() {
-  saveSoon();
+  saveSoon(); refreshBuildState();
   $("pack_file").textContent = P.packFileName(st);
   $("cmd").textContent = P.buildCommand(st);
   const files = P.lutFiles(st).map((f) => `slot ${f.slot}: ${f.file}`);
@@ -237,13 +237,44 @@ function exportZip() {
 }
 // ---- in-browser build: the public Python builder (Pyodide, self-hosted in pyodide/) in a Web Worker; the firmware never leaves this page ------------------------
 let bw = null, bwResult = null;
-const setBuildLog = (t, add = false) => { const o = $("build_log"); o.hidden = false; o.textContent = add ? o.textContent + t + "\n" : t; o.scrollTop = o.scrollHeight; };
-function buildDone() { if (bw) { bw.terminate(); bw = null; } $("build").disabled = false; $("build_cancel").hidden = true; }
+// the build log: finished lines + one transient "still working" line (replaced every few seconds), always scrolled to the newest line
+let blog = [], btransient = "", tick = null, lastMsg = 0, lastStep = "";
+const STALL_S = 180;      // longest silent step measured is about 40 s; 3 minutes without any message = the engine most likely died (out of memory)
+function paintLog() { const o = $("build_log"); o.hidden = false; o.textContent = blog.join("\n") + (btransient ? "\n" + btransient : "") + "\n"; o.scrollTop = o.scrollHeight; }
+const setBuildLog = (t, add = false) => { if (!add) blog = []; blog.push(t); btransient = ""; paintLog(); };
+function startTicker(t0) {
+  lastMsg = performance.now(); lastStep = "starting"; $("build_bar").hidden = false;
+  tick = setInterval(() => {
+    const idle = (performance.now() - lastMsg) / 1000, total = (performance.now() - t0) / 1000;
+    btransient = `... still working: ${lastStep} (${total.toFixed(0)} s in total, ${idle.toFixed(0)} s since the last message)`;
+    if (idle > STALL_S) btransient += "\nThe build engine has not reported for " + Math.round(idle / 60) + " minutes: it probably stopped (out of memory). Press Cancel, close other tabs and try again; it needs about 2 GB free.";
+    paintLog();
+  }, 5000);
+}
+function stopTicker() { clearInterval(tick); tick = null; btransient = ""; $("build_bar").hidden = true; }
+const NO_CHANGE_HINT = "Add at least one look (Import a LUT -> Add to pack) or change the order first.";
+// Build firmware is only possible when the pack changes something (a replaced look, a rename or an order change); a LUT that was imported but not added is called out
+function refreshBuildState() {
+  if (!st) return;
+  const c = P.packChanges(P.buildPack(L, st)), busy = !!bw;
+  $("build").disabled = busy || c.count === 0;
+  const parts = [];
+  if (c.looks) parts.push(`${c.looks} replaced look${c.looks === 1 ? "" : "s"}`);
+  if (c.renames) parts.push(`${c.renames} rename${c.renames === 1 ? "" : "s"}`);
+  if (c.order) parts.push("a changed menu order");
+  let t = c.count ? "Your pack changes: " + parts.join(", ") + "." : NO_CHANGE_HINT;
+  if (ed.lut && !Object.values(st.looks).some((l) => (l.source || {}).sha256 === ed.fileSha))
+    t += ` Note: ${ed.fileName} is loaded but not in the pack yet; press Add to pack (Slot and name card) to include it.`;
+  $("build_hint").textContent = t;
+}
+function buildDone() { if (bw) { bw.terminate(); bw = null; } stopTicker(); $("build_cancel").hidden = true; refreshBuildState(); }
+function buildFailed(text) { setBuildLog(`STOPPED, nothing was built.\n\n${text}`, true); buildDone(); }
 async function buildFirmware() {
   $("build_dl").hidden = true; bwResult = null;
   const f = $("stock_file").files[0];
   if (!f) return setBuildLog("Pick your official firmware file OLY_E_113_1400_0000_0000.BIN (or the unmodified version 94 image) first.");
   const o = exportable(); if (!o) return setBuildLog("Fix the errors listed above first.");
+  if (!P.packChanges(o).count) return setBuildLog(NO_CHANGE_HINT);
   const r = P.omlookEntries(st, o, luts);
   if (r.clash.length) return setBuildLog(`Two different LUT files are both called ${r.clash.join(", ")}. Rename one of them on your disk and import it again.`);
   if (r.missing.length) return setBuildLog(`The page does not hold the LUT file for ${r.missing.join(", ")}. Import that LUT again (Choose file, or drop it on the page) and press Build firmware once more.`);
@@ -252,14 +283,15 @@ async function buildFirmware() {
   const packText = new TextDecoder().decode(r.files[0].bytes), name = P.zipFileName(st).replace(/\.omlook\.zip$/, "");
   setBuildLog("Reading your firmware file ...");
   const stock = new Uint8Array(await f.arrayBuffer());
-  $("build").disabled = true; $("build_cancel").hidden = false;
+  $("build_cancel").hidden = false;
   const t0 = performance.now();
-  saveLast();
-  bw = new Worker("buildworker.js");
+  saveLast(); startTicker(t0);
+  bw = new Worker("buildworker.js"); refreshBuildState();
   bw.onmessage = (e) => {
     const m = e.data;
-    if (m.type === "progress") return setBuildLog(`[${((performance.now() - t0) / 1000).toFixed(0)} s] ${m.text}`, true);
-    if (m.type === "fail") { setBuildLog(`STOPPED, nothing was built.\n\n${m.text}`, true); return buildDone(); }
+    lastMsg = performance.now();
+    if (m.type === "progress") { lastStep = m.text.replace(/^\s+/, ""); return setBuildLog(`[${((performance.now() - t0) / 1000).toFixed(0)} s] ${m.text}`, true); }
+    if (m.type === "fail") return buildFailed(m.text);
     if (m.type === "done") {
       const enc = new TextEncoder();
       bwResult = { zip: makeZip([{ name: "DCOLYMP/E1139999.BIN", bytes: m.image }, { name: "HOW-TO-FLASH.txt", bytes: enc.encode(m.howto.replace(/\n/g, "\r\n")) },
@@ -268,7 +300,8 @@ async function buildFirmware() {
       $("build_dl").hidden = false; $("build_dl").textContent = "Download " + bwResult.name; buildDone();
     }
   };
-  bw.onerror = (e) => { setBuildLog("STOPPED, nothing was built.\n\nThe build engine failed to start (" + (e.message || "worker error") + "). Use a current desktop browser.", true); buildDone(); };
+  bw.onerror = (e) => { e.preventDefault(); buildFailed("The build engine stopped with an error (" + (e.message || "worker error") + "). Close other tabs and try again; it needs about 2 GB free and a current desktop browser."); };
+  bw.onmessageerror = () => buildFailed("The build engine sent a result this browser could not read (probably out of memory). Close other tabs and try again; it needs about 2 GB free.");
   bw.postMessage({ cmd: "build", stock, pack: packText, luts: lutObj, name, file: f.name }, [stock.buffer]);
 }
 function showOut(text) { const o = $("out"); o.hidden = false; o.textContent = text; }
@@ -414,7 +447,7 @@ async function loadLut(text, fileName, bytes, licence) {
   ed.lut = info.lut33; ed.lutInfo = info; ed.fileName = fileName; ed.licence = licence; ed.fileSha = await sha256Hex(bytes); luts.set(ed.fileSha, { name: fileName, bytes });
   ed.fits = {}; ed.hdr = null; ed.stage1 = null; ed.nameDirty = false; ed.mode = null;
   $("space").value = info.space;
-  $("import_msg").textContent = "";
+  $("import_msg").textContent = ""; $("ed_msg").textContent = "";
   $("loaded").hidden = false; $("lut_name").textContent = fileName;
   $("lut_info").textContent = `${info.kind}, native ${info.native.n}^3${info.exactNodes ? "" : " (resampled to 33^3)"}` + (info.notes.length ? "; " + info.notes.join("; ") : "");
   $("lic_row").hidden = licence !== "@page"; licenceNote();
@@ -739,6 +772,11 @@ function updateAdd() {
   else if (licenceProblem()) why = licenceProblem();
   b.disabled = !!why;
   b.title = why;
+  if (!why && !$("ed_msg").textContent) {
+    $("ed_msg").className = "ok-t"; $("ed_msg").textContent = "Fit done. Press Add to pack to put this look into your pack: nothing is built until it is added.";
+    b.scrollIntoView({ block: "center", behavior: reduceMotion() ? "auto" : "smooth" });     // the button sits below the fold on a normal screen
+  }
+  refreshBuildState();
   if (!ed.lut) { $("fitinfo").textContent = "Waiting for a LUT."; $("fitbar").value = 0; }
 }
 function acceptLook() {
@@ -822,7 +860,7 @@ async function init() {
   };
   $("pname").oninput = () => { st.name = $("pname").value; problems(); refreshExport(); };
   $("export_zip").onclick = exportZip;
-  $("build").onclick = () => buildFirmware().catch((e) => { setBuildLog("STOPPED, nothing was built.\n\n" + e.message); buildDone(); });
+  $("build").onclick = () => buildFirmware().catch((e) => buildFailed(e.message));
   $("build_cancel").onclick = () => { buildDone(); setBuildLog("Cancelled, nothing was built.", true); };
   $("build_dl").onclick = () => { if (bwResult) saveBlob(bwResult.name, bwResult.zip, "application/zip"); };
   $("export").onclick = () => { const o = exportable(); if (o) { const t = JSON.stringify(o, null, 1); download(P.packFileName(st), t); showOut(`Exported ${P.packFileName(st)} (${t.length} bytes). This plain JSON has no LUT files: the command line needs --lut-dir with the same LUT files (or use the zip export).`); } };

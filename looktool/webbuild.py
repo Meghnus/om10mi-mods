@@ -24,7 +24,7 @@ def run(stock, pack_text, luts, name, progress, label="This file"):
                 fh.write(pack_text)
             res = G.build_all(bytes(stock), pack_path, lut_dir, progress, label)
         res["ok"] = True
-        res["howto"] = G.HOWTO % dict(name=name, sha1=res["sha1"], stock=res["origin"])
+        res["howto"] = G.HOWTO % dict(name=name, sha1=res["sha1"], stock=res["origin"], changes="\n".join("  " + c for c in res["changes"]))
         res["message"] = "done"
         return res
     except G.Stop as e:

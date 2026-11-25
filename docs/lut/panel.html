@@ -184,9 +184,11 @@
     </ol>
     <p><label class="fld">Your official firmware file (or the version 94 image)
         <input type="file" id="stock_file" accept=".bin,.BIN"></label></p>
+    <p id="build_hint" class="hint" role="status"></p>
     <p><button type="button" id="build" class="btn primary big">Build firmware</button>
        <button type="button" id="build_cancel" class="btn quiet" hidden>Cancel</button>
        <button type="button" id="build_dl" class="btn primary big" hidden>Download firmware zip</button></p>
+    <progress id="build_bar" class="bar" hidden aria-label="Build in progress"></progress>
     <pre id="build_log" class="out" hidden aria-live="polite"></pre>
     <h3>For the command line</h3>
     <p><button type="button" id="export_zip" class="btn quiet">Export pack (.omlook.zip)</button>

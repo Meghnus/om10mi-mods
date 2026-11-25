@@ -8,6 +8,8 @@ import json
 import os
 
 from . import build as B
+from . import container as C
+from . import names88 as N
 from . import omlook as Z
 from . import pack as PK
 
@@ -28,6 +30,9 @@ Read this once, then do it step by step. You flash at your own risk; nothing her
 
 Go back to the official firmware: make a folder DCOLYMP on the card, copy your own official OLY_E_113_1400_0000_0000.BIN into it, rename it to
 E1139999.BIN, and repeat steps 3 to 7.
+
+What changed in this image (compared with the standard version 94 image):
+%(changes)s
 
 To change or add looks later: open the panel, Open pack, pick %(name)s.omlook.zip (in this zip, next to DCOLYMP), edit, and Build firmware again from the
 official firmware. Never build on top of this E1139999.BIN: it already holds your looks and the panel refuses it.
@@ -106,12 +111,35 @@ def check_pack(pack_path, lut_dir):
     return data
 
 
+NO_CHANGE = "This file is the standard version 94 image (no look changes)."
+
+
+def describe_changes(base, data):
+    """what the pack changes, one line each: replaced looks (old menu name -> new name, LUT file), renames, menu order. [] when nothing changes"""
+    pack = data.get("pack") or {}
+    book = N.NameBook(bytearray(C.split_image(base)[1].plain()))
+    out, now = [], {}
+    for look in data.get("looks") or []:
+        s = look["slot"]
+        now[s] = look.get("name")
+        src = (look.get("source") or {}).get("name")
+        out.append("slot %d %s -> %s%s" % (s, book.current_name(s), look.get("name"), " (%s)" % src if src else ""))
+    for k, nm in sorted((pack.get("renames") or {}).items(), key=lambda kv: int(kv[0])):
+        if int(k) not in now:
+            now[int(k)] = nm
+            out.append("slot %s renamed %s -> %s" % (k, book.current_name(int(k)), nm))
+    order = list(pack.get("order") or [])
+    if order:
+        names = [now.get(x) or book.current_name(x) if isinstance(x, int) else x for x in order]
+        out.append("menu order: %s%s go first" % (", ".join(names[:14]), ", ..." if len(names) > 14 else ""))
+    return out
+
+
 def build_all(stock, pack_path, lut_dir, say, label="This file"):
     """-> dict(image, sha1, stock_sha1, battery=(n, failed)). Raises Stop with the plain-language reason; nothing is produced then."""
     import om10mi as OM
     patch = OM.load_patch()
     data = check_pack(pack_path, lut_dir)
-    say("%d look(s) to write." % len(data.get("looks") or []))
     say("[1/3] Checking your file ...")
     kind, in_sha = classify(stock, patch, label)
     if kind == "release":
@@ -130,11 +158,17 @@ def build_all(stock, pack_path, lut_dir, say, label="This file"):
         if sha != patch["result_sha1"]:
             raise Stop("The version 94 image does not match the published hash (%s). Nothing was built." % sha[:8])
         say("      OK: version 94 image, sha1 %s..." % sha[:8])
+    changes = describe_changes(base, data)
+    say("This pack changes:" if changes else NO_CHANGE)
+    for c in changes:
+        say("      " + c)
     say("[3/3] Building your looks (every look is fitted, the result is checked) ...")
 
     def log(line):
         if line.startswith("--- look"):
             say("      " + line[4:].split(" (LUT file")[0])
+        elif line.startswith("acceptance battery"):
+            say("      checking the written image with the acceptance checks ...")
         elif line.startswith("rename slot"):
             say("      " + line)
         elif line.startswith("order:"):
@@ -147,4 +181,4 @@ def build_all(stock, pack_path, lut_dir, say, label="This file"):
     fails = sum(1 for r in bat if r[1] == "FAIL")
     say("      OK: safety checks passed (%d checks, %d failed), image sha1 %s..." % (len(bat), fails, res["report"]["sha1"][:8]))
     return dict(image=res["image"], sha1=res["report"]["sha1"], stock_sha1=stock_sha, base_kind=kind,
-                origin=("your official firmware (sha1 %s) + version 94" % stock_sha) if stock_sha else ("your unmodified version 94 image (sha1 %s)" % in_sha), battery=(len(bat), fails))
+                changes=changes or [NO_CHANGE], origin=("your official firmware (sha1 %s) + version 94" % stock_sha) if stock_sha else ("your unmodified version 94 image (sha1 %s)" % in_sha), battery=(len(bat), fails))

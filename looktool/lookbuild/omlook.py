@@ -29,6 +29,13 @@ def extract(zip_path, dest):
         raise OmlookError("%s is not a readable zip file (%s). Export it again from the panel." % (os.path.basename(zip_path), e))
     with zf:
         packs = [i for i in zf.infolist() if not i.is_dir() and "/" not in i.filename.replace("\\", "/") and i.filename.lower().endswith(".pack.json")]
+        if not packs:                                   # a firmware zip of the web build: DCOLYMP/..., HOW-TO-FLASH.txt and the pack as NAME.omlook.zip
+            inner = [i for i in zf.infolist() if not i.is_dir() and "/" not in i.filename.replace("\\", "/") and i.filename.lower().endswith(".omlook.zip")]
+            if len(inner) == 1 and inner[0].file_size <= (MAX_LUTS + 1) * MAX_LUT:
+                inner_path = os.path.join(dest, "inner.omlook.zip")
+                with open(inner_path, "wb") as fh:
+                    fh.write(zf.read(inner[0]))
+                return extract(inner_path, os.path.join(dest, "inner"))
         if len(packs) != 1:
             raise OmlookError("the zip must hold exactly one *.pack.json (found %d). Export it again from the panel." % len(packs))
         luts = [i for i in zf.infolist() if not i.is_dir() and i.filename.replace("\\", "/").startswith("luts/")]
