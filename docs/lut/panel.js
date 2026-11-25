@@ -12,6 +12,7 @@ import { buildLookFile, sha256Hex, toneBlock } from "./lookfile.js";
 import { fitCandidate, makeHdrProbe, candidateFromCurves } from "./fit.js";
 import { FitPool, FitCancelled } from "./pool.js";
 import * as P from "./pack.js";
+import { makeZip, readZip } from "./zip.js";
 import * as F from "./flow.js";
 
 const $ = (id) => document.getElementById(id);
@@ -22,6 +23,7 @@ function el(tag, cls, text) { const e = document.createElement(tag); if (cls) e.
 
 let L = null;      // panel-slots.json
 let st = null;     // pack state (pack.js)
+const luts = new Map();   // sha256 hex -> { name, bytes }: every LUT file loaded in this page, exactly as read (goes into the .omlook.zip)
 // editor state: the LUT in hand, the chosen base mode / slot, the fits, the preview
 const ed = { slot: null, pendingSlot: null, mode: null, modes: [], nameDirty: false, model: null, modelJson: null, ds: null, lut: null, lutInfo: null, fileSha: null, fileName: "",
   licence: "", stage1: null, lt: null, selected: null, fits: {}, hdr: null, pool: null, fitting: false, fitWanted: false, gen: 0, preview: null, photo: null, photoName: "",
@@ -204,17 +206,70 @@ function syncMeta() {
   $("sha_row").hidden = $("rel").value !== "custom";
 }
 function refreshExport() {
+  saveSoon();
   $("pack_file").textContent = P.packFileName(st);
   $("cmd").textContent = P.buildCommand(st);
   const files = P.lutFiles(st).map((f) => `slot ${f.slot}: ${f.file}`);
   $("cmd_files").textContent = files.length
-    ? "Tables the builder looks for in --lut-dir (it re-scores each look exactly when found; a missing table uses the target-free gate): " + files.join(", ") + "."
+    ? "Tables the builder looks for in --lut-dir (it re-scores each look exactly when found; a missing table is refused when the stricter check fails). The zip export already contains them: " + files.join(", ") + "."
     : "No look replaced yet: the pack only holds names and order.";
 }
 function download(name, text, type = "application/json") {
   const a = document.createElement("a");
   a.href = URL.createObjectURL(new Blob([text], { type }));
   a.download = name; document.body.appendChild(a); a.click(); a.remove();
+}
+function saveBlob(name, bytes, type) {
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([bytes], { type }));
+  a.download = name; document.body.appendChild(a); a.click(); a.remove();
+}
+function exportZip() {
+  const o = exportable(); if (!o) return;
+  const r = P.omlookEntries(st, o, luts);
+  if (r.clash.length) return showOut(`Not exported: two different LUT files are both called ${r.clash.join(", ")}. Rename one of them on your disk and import it again.`);
+  if (r.missing.length) return showOut(`Not exported as a zip: the page does not hold the LUT file for ${r.missing.join(", ")}. Import that LUT again (Choose file, or drop it on the page) and press Export pack once more. `
+    + "(A pack opened from a JSON file or a share link has no LUT files; the plain JSON export below still works with --lut-dir.)");
+  const zip = makeZip(r.files), name = P.zipFileName(st);
+  saveBlob(name, zip, "application/zip");
+  const luts_ = r.files.filter((f) => f.name.startsWith("luts/")).map((f) => f.name.slice(5));
+  showOut(`Exported ${name} (${zip.length} bytes): the pack${luts_.length ? " + " + luts_.join(", ") : ""}.\nNext: drop ${name} on om10mi-look.exe, then copy the DCOLYMP folder it makes to the card.`);
+}
+// ---- in-browser build: the public Python builder (Pyodide, self-hosted in pyodide/) in a Web Worker; the firmware never leaves this page ------------------------
+let bw = null, bwResult = null;
+const setBuildLog = (t, add = false) => { const o = $("build_log"); o.hidden = false; o.textContent = add ? o.textContent + t + "\n" : t; o.scrollTop = o.scrollHeight; };
+function buildDone() { if (bw) { bw.terminate(); bw = null; } $("build").disabled = false; $("build_cancel").hidden = true; }
+async function buildFirmware() {
+  $("build_dl").hidden = true; bwResult = null;
+  const f = $("stock_file").files[0];
+  if (!f) return setBuildLog("Pick your official firmware file OLY_E_113_1400_0000_0000.BIN (or the unmodified version 94 image) first.");
+  const o = exportable(); if (!o) return setBuildLog("Fix the errors listed above first.");
+  const r = P.omlookEntries(st, o, luts);
+  if (r.clash.length) return setBuildLog(`Two different LUT files are both called ${r.clash.join(", ")}. Rename one of them on your disk and import it again.`);
+  if (r.missing.length) return setBuildLog(`The page does not hold the LUT file for ${r.missing.join(", ")}. Import that LUT again (Choose file, or drop it on the page) and press Build firmware once more.`);
+  const lutObj = {};
+  for (const x of r.files) if (x.name.startsWith("luts/")) lutObj[x.name.slice(5)] = x.bytes;
+  const packText = new TextDecoder().decode(r.files[0].bytes), name = P.zipFileName(st).replace(/\.omlook\.zip$/, "");
+  setBuildLog("Reading your firmware file ...");
+  const stock = new Uint8Array(await f.arrayBuffer());
+  $("build").disabled = true; $("build_cancel").hidden = false;
+  const t0 = performance.now();
+  saveLast();
+  bw = new Worker("buildworker.js");
+  bw.onmessage = (e) => {
+    const m = e.data;
+    if (m.type === "progress") return setBuildLog(`[${((performance.now() - t0) / 1000).toFixed(0)} s] ${m.text}`, true);
+    if (m.type === "fail") { setBuildLog(`STOPPED, nothing was built.\n\n${m.text}`, true); return buildDone(); }
+    if (m.type === "done") {
+      const enc = new TextEncoder();
+      bwResult = { zip: makeZip([{ name: "DCOLYMP/E1139999.BIN", bytes: m.image }, { name: "HOW-TO-FLASH.txt", bytes: enc.encode(m.howto.replace(/\n/g, "\r\n")) },
+        { name: P.zipFileName(st), bytes: makeZip(r.files) }]), name: name + "-firmware.zip", sha1: m.sha1 };
+      setBuildLog(`DONE in ${((performance.now() - t0) / 1000).toFixed(0)} s: image sha1 ${m.sha1}.\nDownload the zip, unzip it, copy the DCOLYMP folder to the card and follow HOW-TO-FLASH.txt.\nThis file has NOT been tried on a camera; you flash at your own risk.`, true);
+      $("build_dl").hidden = false; $("build_dl").textContent = "Download " + bwResult.name; buildDone();
+    }
+  };
+  bw.onerror = (e) => { setBuildLog("STOPPED, nothing was built.\n\nThe build engine failed to start (" + (e.message || "worker error") + "). Use a current desktop browser.", true); buildDone(); };
+  bw.postMessage({ cmd: "build", stock, pack: packText, luts: lutObj, name, file: f.name }, [stock.buffer]);
 }
 function showOut(text) { const o = $("out"); o.hidden = false; o.textContent = text; }
 function exportable() {
@@ -238,10 +293,67 @@ async function applyObject(obj, from) {
   r.warnings.forEach((w) => box.append(el("div", "w", `warning ${w.where}: ${w.msg}`)));
   return true;
 }
+// a pack zip (.omlook.zip, or the firmware zip that holds one): the pack + the LUT files it carries go back into this page, so the pack can be edited and built again
+async function openZip(bytes, from) {
+  const files = await readZip(bytes);
+  const pk = files.find((x) => !x.name.includes("/") && /\.pack\.json$/i.test(x.name));
+  if (!pk) {
+    const inner = files.find((x) => !x.name.includes("/") && /\.omlook\.zip$/i.test(x.name));
+    if (inner) return openZip(inner.bytes, inner.name);
+    throw new Error("no *.pack.json inside");
+  }
+  const obj = JSON.parse(new TextDecoder("utf-8", { fatal: true }).decode(pk.bytes));
+  for (const x of files) if (x.name.startsWith("luts/")) luts.set(await sha256Hex(x.bytes), { name: x.name.slice(5), bytes: x.bytes });
+  return applyObject(obj, from);
+}
 async function importFile(f) {
+  if (/\.zip$/i.test(f.name)) {
+    try { await openZip(new Uint8Array(await f.arrayBuffer()), f.name); } catch (e) { showOut("Cannot open " + f.name + ": " + e.message + ". Pick the .omlook.zip you saved (or the firmware zip that holds it)."); }
+    return;
+  }
   let obj;
   try { obj = JSON.parse(await f.text()); } catch (e) { showOut("Cannot read " + f.name + ": " + e.message); return; }
   await applyObject(obj, f.name);
+}
+// ---- the last pack is remembered in this browser (IndexedDB, same origin only: nothing is sent anywhere) ---------------------------------------------------
+const IDB = { db: "om10mi-panel", store: "last", key: "pack", maxBytes: 60 << 20 };
+function idb(op) {
+  return new Promise((res, rej) => {
+    const rq = indexedDB.open(IDB.db, 1);
+    rq.onupgradeneeded = () => rq.result.createObjectStore(IDB.store);
+    rq.onerror = () => rej(rq.error);
+    rq.onsuccess = () => {
+      const tx = rq.result.transaction(IDB.store, "readwrite"), r = op(tx.objectStore(IDB.store));
+      tx.oncomplete = () => { rq.result.close(); res(r.result); };
+      tx.onerror = tx.onabort = () => { rq.result.close(); rej(tx.error); };
+    };
+  });
+}
+let saveTimer = null;
+function saveLast() {
+  clearTimeout(saveTimer); saveTimer = null;
+  if (!st || !Object.keys(st.looks).length) return;          // never overwrite the remembered pack with an empty page
+  try {
+    const obj = P.buildPack(L, st), keep = [];
+    let size = 0;
+    for (const l of Object.values(st.looks)) {
+      const h = luts.get(String((l.source || {}).sha256 || "").toLowerCase());
+      if (h && !keep.some((k) => k.sha === l.source.sha256)) { size += h.bytes.length; keep.push({ sha: l.source.sha256.toLowerCase(), name: h.name, bytes: h.bytes }); }
+    }
+    idb((s) => s.put({ obj, luts: size <= IDB.maxBytes ? keep : [], at: Date.now() }, IDB.key)).catch(() => { /* private mode / quota: not remembered */ });
+  } catch { /* not remembered */ }
+}
+function saveSoon() { clearTimeout(saveTimer); saveTimer = setTimeout(saveLast, 1500); }
+async function offerLast() {
+  let rec = null;
+  try { rec = await idb((s) => s.get(IDB.key)); } catch { return; }
+  if (!rec || !rec.obj) return;
+  const b = $("continue_last"), n = (rec.obj.looks || []).length;
+  b.hidden = false; b.title = `${rec.obj.pack && rec.obj.pack.name ? rec.obj.pack.name + ": " : ""}${n} look(s), saved ${new Date(rec.at).toLocaleString()}`;
+  b.onclick = async () => {
+    for (const x of rec.luts || []) luts.set(x.sha, { name: x.name, bytes: x.bytes });
+    if (await applyObject(rec.obj, "the last pack") && n && !(rec.luts || []).length) showOut("The LUT files were not remembered (too large for this browser's storage): import them again before you build.");
+  };
 }
 async function shareLink() {
   const obj = exportable(); if (!obj) return;
@@ -299,7 +411,7 @@ function getDataset() {
 async function loadLut(text, fileName, bytes, licence) {
   const info = await importLutText(text, fileName);
   cancelFit(); ed.gen++;
-  ed.lut = info.lut33; ed.lutInfo = info; ed.fileName = fileName; ed.licence = licence; ed.fileSha = await sha256Hex(bytes);
+  ed.lut = info.lut33; ed.lutInfo = info; ed.fileName = fileName; ed.licence = licence; ed.fileSha = await sha256Hex(bytes); luts.set(ed.fileSha, { name: fileName, bytes });
   ed.fits = {}; ed.hdr = null; ed.stage1 = null; ed.nameDirty = false; ed.mode = null;
   $("space").value = info.space;
   $("import_msg").textContent = "";
@@ -709,7 +821,11 @@ async function init() {
     rel.value = k >= 0 ? String(k) : "custom"; $("sha_row").hidden = rel.value !== "custom"; problems(); refreshExport();
   };
   $("pname").oninput = () => { st.name = $("pname").value; problems(); refreshExport(); };
-  $("export").onclick = () => { const o = exportable(); if (o) { const t = JSON.stringify(o, null, 1); download(P.packFileName(st), t); showOut(`Exported ${P.packFileName(st)} (${t.length} bytes). Check it with: python fw/lut_stage1/lookfile/lookfile_check.py ${P.packFileName(st)}`); } };
+  $("export_zip").onclick = exportZip;
+  $("build").onclick = () => buildFirmware().catch((e) => { setBuildLog("STOPPED, nothing was built.\n\n" + e.message); buildDone(); });
+  $("build_cancel").onclick = () => { buildDone(); setBuildLog("Cancelled, nothing was built.", true); };
+  $("build_dl").onclick = () => { if (bwResult) saveBlob(bwResult.name, bwResult.zip, "application/zip"); };
+  $("export").onclick = () => { const o = exportable(); if (o) { const t = JSON.stringify(o, null, 1); download(P.packFileName(st), t); showOut(`Exported ${P.packFileName(st)} (${t.length} bytes). This plain JSON has no LUT files: the command line needs --lut-dir with the same LUT files (or use the zip export).`); } };
   $("open_pack").onclick = () => $("import").click();
   $("import").onchange = async (e) => { const f = e.target.files[0]; e.target.value = ""; if (f) await importFile(f); };
   $("share").onclick = shareLink;
@@ -742,6 +858,7 @@ async function init() {
   $("copy").onclick = copyLook;
   syncMeta(); render(); renderPlace(); setDivider(0.5);
   await drawPreview();
+  offerLast();
   window.panel = { get st() { return st; }, ed, L, P, F, render, loadSample, doFit, applyObject, acceptLook, rankNow, handleFiles };
   if (location.hash.startsWith("#" + "pack=")) {
     try { await applyObject(await P.shareDecode(location.hash), "share link"); } catch (e) { showOut("Share link not loaded: " + e.message); }

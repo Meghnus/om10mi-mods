@@ -171,6 +171,35 @@ export const buildCommand = (st) => `python looktool/om10mi_look.py --pack ${pac
 // the table files the builder will look for in --lut-dir (it re-scores each look exactly when it finds its table)
 export const lutFiles = (st) => Object.keys(st.looks).map(Number).sort((a, b) => a - b).map((s) => ({ slot: s, file: st.looks[s].source && st.looks[s].source.name }));
 
+// ---- .omlook.zip: the pack JSON + the exact LUT files as loaded in the browser (name + sha256 match the pack) + a short README ----------
+export const zipFileName = (st) => packFileName(st).replace(/\.pack\.json$/, ".omlook.zip");
+export const OMLOOK_README = (zipName, lutNames) => [
+  "OM10MI look pack (" + zipName + ")", "",
+  "Easy way: drop this .omlook.zip on om10mi-look.exe (Windows) and follow the window.",
+  "It needs your own official firmware file OLY_E_113_1400_0000_0000.BIN (put it next to the exe, or the exe asks for it).",
+  "It writes DCOLYMP\\E1139999.BIN and HOW-TO-FLASH.txt next to this zip. You copy the DCOLYMP folder to the card yourself.", "",
+  "Inside: the pack (*.pack.json: look numbers, names, order)" + (lutNames.length ? " and the LUT files the looks were made from: " + lutNames.join(", ") : "") + ".",
+  "Command line instead: python looktool/om10mi_look.py --pack " + zipName + " --base YOUR_IMAGE.BIN --out DIR",
+  "Nothing here is firmware. Flashing is at your own risk; keep your official firmware ready to restore the camera.", ""].join("\r\n");
+// obj = the exported pack object, luts = Map(sha256 hex -> { name, bytes }) of the files loaded in this page.
+// -> { files: [{ name, bytes }] , missing: ["NAME (slot N)"], clash: ["NAME"] }  (files is empty when something is missing / clashes)
+export function omlookEntries(st, obj, luts) {
+  const enc = new TextEncoder(), missing = [], clash = [], byName = new Map();
+  for (const l of obj.looks || []) {
+    const src = l.source || {}, hit = luts.get(String(src.sha256 || "").toLowerCase());
+    if (!hit) { missing.push(`${src.name || "?"} (look ${JSON.stringify(l.name)})`); continue; }
+    const prev = byName.get(src.name);
+    if (prev && prev !== hit) { clash.push(src.name); continue; }
+    byName.set(src.name, hit);
+  }
+  if (missing.length || clash.length) return { files: [], missing, clash };
+  const base = packFileName(st), names = [...byName.keys()];
+  const files = [{ name: base, bytes: enc.encode(JSON.stringify(obj, null, 1)) }];
+  for (const n of names) files.push({ name: "luts/" + n, bytes: byName.get(n).bytes });
+  files.push({ name: "README.txt", bytes: enc.encode(OMLOOK_README(zipFileName(st), names)) });
+  return { files, missing, clash };
+}
+
 // ---- share link: deflate-raw + base64url of the compact JSON (lives in the URL fragment, which the browser never sends to a server) -----
 const FRAG = "pack=";
 function b64u(u8) {

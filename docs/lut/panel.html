@@ -15,8 +15,9 @@
   <h1 class="brand">Look pack <span>Olympus E-M10 Mark I</span></h1>
   <p id="status" class="status" role="status">loading...</p>
   <div class="top-actions">
-    <button type="button" id="open_pack" class="btn quiet">Open pack JSON</button>
-    <input type="file" id="import" accept=".json,application/json" hidden>
+    <button type="button" id="continue_last" class="btn quiet" hidden>Continue last pack</button>
+    <button type="button" id="open_pack" class="btn quiet">Open pack</button>
+    <input type="file" id="import" accept=".json,.zip,application/json,application/zip" hidden>
     <div class="seg" role="group" aria-label="Theme">
       <button type="button" data-theme-set="auto" aria-pressed="true">Auto</button>
       <button type="button" data-theme-set="dark" aria-pressed="false">Dark</button>
@@ -174,10 +175,26 @@
     </div>
     <p class="hint">The sha1 pins the exact release image on your PC; the builder refuses any other image (never use an image of another camera model).</p>
     <div id="problems" class="problems" aria-live="polite"></div>
-    <p><button type="button" id="export" class="btn primary big">Export pack</button></p>
-    <h3>Build on your PC</h3>
+    <h3>Build the firmware here</h3>
     <ol class="steps">
-      <li>Save the pack as <code id="pack_file" class="mono"></code> next to <code class="mono">looktool/om10mi_look.py</code>.</li>
+      <li>Pick your own official firmware <code class="mono">OLY_E_113_1400_0000_0000.BIN</code> (E-M10 Mark I, version 1.4). It is read on this computer and never uploaded; its hash is checked. The unmodified version 94 image from <code class="mono">om10mi-build</code> works too (it skips one step); any other file is refused.</li>
+      <li>Press <b>Build firmware</b>. Everything runs in this page (about 20 MB of build engine is loaded once; it takes a few minutes and needs about 2 GB of free memory).</li>
+      <li>Download the zip and unzip it. It holds the firmware folder and your pack (<code class="mono">.omlook.zip</code>): keep the pack, it is how you change your looks later (<b>Open pack</b>; this page also remembers the last pack in this browser: <b>Continue last pack</b>).</li>
+      <li>Copy the <code class="mono">DCOLYMP</code> folder to the camera's card and follow <code class="mono">HOW-TO-FLASH.txt</code>.</li>
+    </ol>
+    <p><label class="fld">Your official firmware file (or the version 94 image)
+        <input type="file" id="stock_file" accept=".bin,.BIN"></label></p>
+    <p><button type="button" id="build" class="btn primary big">Build firmware</button>
+       <button type="button" id="build_cancel" class="btn quiet" hidden>Cancel</button>
+       <button type="button" id="build_dl" class="btn primary big" hidden>Download firmware zip</button></p>
+    <pre id="build_log" class="out" hidden aria-live="polite"></pre>
+    <h3>For the command line</h3>
+    <p><button type="button" id="export_zip" class="btn quiet">Export pack (.omlook.zip)</button>
+       <button type="button" id="export" class="btn quiet">Plain JSON only</button></p>
+    <p class="hint">The zip holds your looks and the exact LUT files they were made from; <code class="mono">om10mi_look.py --pack NAME.omlook.zip</code> takes it directly.</p>
+    <h3>Command line (advanced)</h3>
+    <ol class="steps">
+      <li>Save the pack (plain JSON, or the zip, which carries its own LUT files) as <code id="pack_file" class="mono"></code> next to <code class="mono">looktool/om10mi_look.py</code>.</li>
       <li>Put your own release image and the LUT files used here into folders on your PC.</li>
       <li>Run:</li>
     </ol>
@@ -196,7 +213,7 @@
 </div>
 
 <div id="overlay" class="overlay" aria-hidden="true">
-  <div class="overlay-in"><b>Drop to load</b><span>.cube / .xmp LUT, .json pack, or a photo for the preview</span></div>
+  <div class="overlay-in"><b>Drop to load</b><span>.cube / .xmp LUT, .json or .omlook.zip pack, or a photo for the preview</span></div>
 </div>
 
 <footer id="legal" class="legal">

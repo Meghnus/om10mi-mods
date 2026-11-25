@@ -212,7 +212,9 @@ curves fitted to your LUT: close for gentle film-style LUTs, weaker for extreme 
 1. In the browser (nothing is uploaded): the [look list manager](https://meghnus.github.io/om10mi-mods/lut/panel.html) ranks
    the base picture modes against your LUT, fits, previews and exports a pack file
    (the single-LUT page is [here](https://meghnus.github.io/om10mi-mods/lut/)).
-2. On your PC: `looktool/om10mi_look.py` applies the pack to the version 94 image you built from your own official firmware.
+2. Still in the browser: pick your own official firmware (or the unmodified version 94 image) and press **Build firmware**; the page builds the card
+   file with the same Python builder (run in WebAssembly, no upload) and gives you a zip with `DCOLYMP/E1139999.BIN`, `HOW-TO-FLASH.txt` and your
+   pack (`.omlook.zip`, to change your looks later). Or on your PC: `looktool/om10mi_look.py` applies the pack to the version 94 image you built from your own official firmware.
 
 Details, limits and licences: [looktool/README.md](looktool/README.md) and [docs/lut/README.md](docs/lut/README.md). Three CC0
 example LUTs and an example pack are in `looktool/examples/`. Hiding looks is not available.

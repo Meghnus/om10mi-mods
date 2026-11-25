@@ -7,7 +7,8 @@ plus addresses and hashes. This script fails (exit 1) when it finds any of:
 
   * a forbidden file type (.bin .dec .part .dmp .dump .img .rom) or a name containing "dump"
   * a file that starts like an OM firmware container (marker "OE" + a valid block chain)
-  * a file larger than 1 MB, except images (.jpg .jpeg .png, up to 5 MB) and .json (up to 2 MB)
+  * a file larger than 1 MB, except images (.jpg .jpeg .png, up to 5 MB), .json (up to 2 MB) and the Pyodide runtime of the in-browser build
+    (docs/lut/pyodide/*.wasm .zip .whl .js, up to 12 MB)
   * a long hex string (200+ hex digits) or base64-looking blob in any text file outside patch/
   * a patch/*.json that is malformed, has an unknown step type, or carries more literal
     bytes than expected for a look pack (sanity cap 128 KB)
@@ -36,6 +37,8 @@ IMAGE_EXT = {".jpg", ".jpeg", ".png"}
 LIMIT_DEFAULT = 1 << 20
 LIMIT_IMAGE = 5 << 20
 LIMIT_JSON = 2 << 20
+LIMIT_RUNTIME = 12 << 20          # the self-hosted Pyodide runtime of the in-browser build (docs/lut/pyodide/: .wasm .zip .whl .js)
+RUNTIME_EXT = {".wasm", ".zip", ".whl", ".js"}
 LITERAL_CAP = 128 * 1024
 HEX_RUN = re.compile(rb"[0-9a-fA-F]{200,}")
 B64_RUN = re.compile(rb"[A-Za-z0-9+/]{300,}={0,2}")
@@ -78,6 +81,8 @@ def check_files(problems):
         if "dump" in base:
             problems.append("%s: name contains 'dump'" % name)
         limit = LIMIT_IMAGE if ext in IMAGE_EXT else LIMIT_JSON if ext == ".json" else LIMIT_DEFAULT
+        if name.replace("\\", "/").startswith("docs/lut/pyodide/") and ext in RUNTIME_EXT:
+            limit = LIMIT_RUNTIME
         if size > limit:
             problems.append("%s: %d bytes exceeds the %d byte limit for this file type" % (name, size, limit))
         with open(path, "rb") as f:

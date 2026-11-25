@@ -14,6 +14,10 @@ New in 94 compared with 88:
   (also behind an anchor row such as Gold 200). Browser pages for it in `docs/lut/`
   ([look list manager](https://meghnus.github.io/om10mi-mods/lut/panel.html)). No firmware is stored in the tool; it works on your own
   built image. CC0 example LUTs and an example pack are included. See [looktool/README.md](looktool/README.md).
+- **Build firmware in the browser:** the panel builds the card file itself from your own official firmware (or the unmodified version 94 image) with this
+  builder run in WebAssembly (Pyodide, self-hosted in `docs/lut/pyodide/`); nothing is uploaded. The result zip carries `DCOLYMP/E1139999.BIN`,
+  `HOW-TO-FLASH.txt` and the pack as `NAME.omlook.zip` (pack + its LUT files) to change looks later; the panel opens that zip and remembers the last pack.
+  `om10mi_look.py --pack` takes the `.omlook.zip` too, and a missing LUT now says so ("LUT file NAME not found in --lut-dir / zip").
 - The builder now makes version 94 only (`patch/looks94.json`).
 
 Known limits in 94:

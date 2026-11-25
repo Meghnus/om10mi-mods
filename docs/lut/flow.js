@@ -4,11 +4,11 @@
 import * as P from "./pack.js";
 
 // ---- dropped / chosen files ------------------------------------------------------------------------------------------------------
-// "lut" (.cube / Adobe .xmp), "pack" (.json), "photo" (preview picture), "other"
+// "lut" (.cube / Adobe .xmp), "pack" (.json, or the .omlook.zip export), "photo" (preview picture), "other"
 export function classifyFile(name, type = "") {
   const n = String(name).toLowerCase();
   if (/\.(cube|xmp)$/.test(n)) return "lut";
-  if (/\.json$/.test(n) || type === "application/json") return "pack";
+  if (/\.(json|zip)$/.test(n) || type === "application/json") return "pack";
   if (/\.(jpe?g|png|webp|gif|bmp|avif)$/.test(n) || /^image\//.test(type)) return "photo";
   return "other";
 }

@@ -35,6 +35,13 @@ A second page, same rules (static, local, no upload). It is one flow, top to bot
 3. **Add to pack**: the fit runs in Web Workers as soon as LUT and mode are known (a few seconds). The before/after divider shows the original (or the LUT
    target) against our camera model, on six reference scenes or on your own photo; **Add to pack** arms when the fit is done.
 
+**Build firmware** (Export card): pick your own official firmware `OLY_E_113_1400_0000_0000.BIN` (or the unmodified version 94 image; any other file, for example an
+image that already holds a look pack, is refused) and the page builds the card file itself: the public Python builder runs in a Web Worker with Pyodide
+(WebAssembly, self-hosted in `pyodide/`, no CDN). The file is read locally and never uploaded; the result is byte-identical to the command line's. The zip you download
+holds `DCOLYMP/E1139999.BIN`, `HOW-TO-FLASH.txt` and `NAME.omlook.zip` (the pack + the exact LUT files). To change or add looks later, **Open pack** that
+`.omlook.zip` (or **Continue last pack**: the page remembers the last pack, with its LUTs, in this browser's IndexedDB), edit, and build again from the official
+firmware; a built image is never used as a base.
+
 **Your pack** is the Picture Mode list: i-Enhance (fixed first), the 18 look slots and the stock items (Vivid, Natural, Muted, Portrait, Monotone, Custom,
 e-Portrait, Color Creator, ART1..12). Drag the grip, use the arrows, or press Alt+Up/Down on a focused row; edit a menu name in place (capacity counter per
 slot); **Replace** imports another LUT into a slot, **Remove look** gives the stock look back. Slot 2 (Acros, monotone) can be renamed and moved, never

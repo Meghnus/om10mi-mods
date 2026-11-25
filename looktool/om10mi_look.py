@@ -2,6 +2,7 @@
 """om10mi_look.py - write a look made in the web page (look file v2) into one look slot of your own E-M10 Mark I release image.
 
     python om10mi_look.py --look my.look.json --slot 9 --base E1139999.BIN --out out_dir [--lut source.cube]
+    python om10mi_look.py --pack NAME.omlook.zip --base E1139999.BIN --out out_dir          (zip from the web panel: carries its LUT files)
     python om10mi_look.py --selftest --base E1139999.BIN
 
 --base   the version 94 image built from YOUR OWN official firmware by om10mi.py (sha1 is checked). Or give --stock OLY_E_113_1400_0000_0000.BIN
@@ -22,6 +23,7 @@ import importlib.util
 import json
 import os
 import sys
+import tempfile
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
@@ -30,6 +32,7 @@ from lookbuild import audit as A          # noqa: E402
 from lookbuild import build as B          # noqa: E402
 from lookbuild import container as C      # noqa: E402
 from lookbuild import names88 as N       # noqa: E402
+from lookbuild import omlook as OM        # noqa: E402
 from lookbuild import slots88 as S        # noqa: E402
 
 
@@ -107,7 +110,8 @@ def build_base_from_stock(stock_path, om10mi_path):
 def main(argv):
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0], formatter_class=argparse.RawDescriptionHelpFormatter, epilog=__doc__)
     ap.add_argument("--look", help="look file v2 (JSON)")
-    ap.add_argument("--pack", help="look pack (look file v2 + `pack` block, PACK_SPEC_v2.md): replace / rename / reorder in one build (hide is not available)")
+    ap.add_argument("--pack", help="look pack (look file v2 + `pack` block, PACK_SPEC_v2.md): replace / rename / reorder in one build (hide is not available). "
+                    "Also a NAME.omlook.zip from the web panel (pack + the LUT files it needs; --lut-dir then only fills in files the zip lacks)")
     ap.add_argument("--lut-dir", help="folder holding the source tables of the pack's looks (found by source.name, sha256 checked)")
     ap.add_argument("--no-battery", action="store_true", help="(not recommended) skip the acceptance battery: the report says UNCHECKED")
     ap.add_argument("--index", type=int, default=0, help="which look of the file (default 0)")
@@ -140,6 +144,14 @@ def main(argv):
         if a.pack:
             if not a.out:
                 ap.error("--out is required")
+            if OM.is_omlook(a.pack):
+                with tempfile.TemporaryDirectory() as tmp:
+                    try:
+                        a.pack, a.lut_dir = OM.prepare(a.pack, a.lut_dir, tmp)
+                    except OM.OmlookError as e:
+                        print("REFUSED: %s\nNothing was written." % e)
+                        return 1
+                    return run_pack(a, base)
             return run_pack(a, base)
         if not a.look or not a.out:
             ap.error("--look (or --pack) and --out are required")

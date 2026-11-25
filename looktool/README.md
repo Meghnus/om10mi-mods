@@ -1,15 +1,24 @@
 # looktool - optional look pack builder (version 94)
 
-An optional PC tool that changes the **Picture Mode look list** of the version 94 image you built with `om10mi.py`:
-replace looks with your own (from a `.cube` or an Adobe Creative Profile `.xmp`), rename them, and put them in the order you
-want. You do not need it to use the release; the camera file from `om10mi-build` is complete without it.
+## Easy way (in your browser, nothing to install)
 
-**No firmware is stored here.** The tool holds layout facts (addresses, strides, counts) and our own code. It works on the
-image you built yourself from your own official firmware, checks its sha1 (`baf96f07b86f40aa91bb100a3658f64d9ed4dcf2`),
-changes only the declared look data, runs a confinement audit and an acceptance battery, and writes a new BIN. It never
-writes to a camera or a card by itself. Flashing is at your own risk; keep `out/RESTORE` ready.
+1. Open the [look pack panel](https://meghnus.github.io/om10mi-mods/lut/panel.html), import your LUTs and make your looks.
+2. In the **Export** card pick your own official firmware `OLY_E_113_1400_0000_0000.BIN` (E-M10 Mark I, version 1.4; `om10mi-build.exe` or the
+   OM Digital Solutions server gives you the file) and press **Build firmware**. The page builds the version 94 image and writes your looks into it, all inside
+   the browser (the builder runs as Python in WebAssembly, served from the same site). Your firmware is read on your computer and never uploaded; its hash is
+   checked first. It takes a few minutes and needs a desktop browser with about 2 GB of free memory.
+3. Download the zip, unzip it, copy the folder `DCOLYMP` to the camera's card and follow `HOW-TO-FLASH.txt`.
 
-## Workflow
+If something is wrong the page says what to do next (for example *"X" is too far from what the camera can do in Vivid: pick another base mode*) and
+builds nothing. It never touches a camera or a card. You flash at your own risk; keep your official firmware to go back.
+
+Prefer the command line? **Export pack (.omlook.zip)** in the panel gives one file with your looks and the exact LUT files; see below.
+
+## Command line (Python)
+
+The same result on your PC. Python 3.10+ and numpy.
+
+### Steps
 
 1. Build the version 94 image: `python om10mi.py build` (gives `out/DCOLYMP/E1139999.BIN`).
 2. Make a pack in the browser: [look list manager](https://meghnus.github.io/om10mi-mods/lut/panel.html)
@@ -18,6 +27,7 @@ writes to a camera or a card by itself. Flashing is at your own risk; keep `out/
 3. Build: `python looktool/om10mi_look.py --pack NAME.pack.json --base out/DCOLYMP/E1139999.BIN --out DIR --lut-dir DIR_OF_YOUR_LUTS`
    (needs Python 3.10+ and numpy). The result is `DIR/E113_PACK_TEST.BIN` (or `DIR/DCOLYMP/E1139999.BIN` with `--card`).
    Several minutes: the acceptance battery is part of the build and a failing step builds nothing.
+`--pack` also takes the `NAME.omlook.zip` of the panel (it carries the LUT files; `--lut-dir` is then optional).
 
 Also: `--stock OLY_E_113_1400_0000_0000.BIN --om10mi om10mi.py` instead of `--base` builds the version 94 image first.
 
@@ -25,8 +35,8 @@ Also: `--stock OLY_E_113_1400_0000_0000.BIN --om10mi om10mi.py` instead of `--ba
 replaces the `om10mi-build` image (that one is only the input). With `--card` it is written as `DIR/DCOLYMP/E1139999.BIN`,
 ready to copy to the card; without `--card`, rename `DIR/E113_PACK_TEST.BIN` to `E1139999.BIN` inside a `DCOLYMP` folder.
 
-**"REFUSED: the exact model differs from the browser model by X dE"** means the builder did not find the look's LUT, so it
-fell back to a stricter check without the LUT. Pass `--lut-dir` with the same `.cube` / `.xmp` files you used in the web page
+**"REFUSED: LUT file NAME not found in --lut-dir / zip"** means the builder did not find the look's LUT, so it
+could only run a stricter check without the LUT, and that refused the look. Pass `--lut-dir` with the same `.cube` / `.xmp` files you used in the web page
 (same file names, unmodified: they are matched by name and checksum). The builder then scores the look against the LUT itself.
 If a look is still refused ("the exact model scores X dE, the look file predicts Y"), that LUT moves tones further than the
 camera can follow in that base mode: choose another base mode for it in the web page (it ranks them) or another slot.
@@ -50,6 +60,7 @@ camera can follow in that base mode: choose another base mode for it in the web 
 
 | Path | What |
 |---|---|
+| `webbuild.py`, `lookbuild/guide.py` | entry and plain-language messages of the in-browser build (the same builder, run by Pyodide; bundle: `tools/make_web_bundle.py`) |
 | `om10mi_look.py` | the builder (replace / rename / reorder through a pack, or one look into one slot) |
 | `reorder.py` | order-only builds, with the `--after` anchor |
 | `lookbuild/`, `lutimport/`, `lookfile/`, `lutfit_check.py` | builder modules, LUT readers, file format specs (`LOOKFILE_SPEC_v2.md`, `PACK_SPEC_v2.md`) |

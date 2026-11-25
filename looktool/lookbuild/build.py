@@ -35,6 +35,22 @@ class BuildError(Exception):
     """a refusal: nothing was written"""
 
 
+class GateRefused(BuildError):
+    """a dE gate refused the look (kind "lut": exact model vs the look file's prediction with the LUT; "model": exact vs browser model without it); .mode = base picture mode"""
+    def __init__(self, text, kind, look_name, mode, de, ref, gate):
+        self.kind, self.look_name, self.mode, self.de, self.ref, self.gate = kind, look_name, mode, de, ref, gate
+        BuildError.__init__(self, text)
+
+
+class LutNotFound(BuildError):
+    """the look's source LUT was not available, and the stricter target-free check (the only one possible without it) refused the look"""
+    def __init__(self, lut_name, look_name, de, gate):
+        self.lut_name, self.look_name, self.de, self.gate = lut_name, look_name, de, gate
+        BuildError.__init__(self, "LUT file %s not found in --lut-dir / zip (needed by look %r). Without it only the stricter target-free check can run, "
+                            "and it refused the look (%.3f dE > %.2f). Put the exact file you imported in the panel (same name, unmodified) "
+                            "next to the pack (--lut-dir), or use the .omlook.zip export that carries it. Not written" % (lut_name, look_name, de, gate))
+
+
 def _lookfile_check():
     for p in (os.path.join(LUT1, "lookfile"), os.path.join(LUT1, "lutimport")):
         if p not in sys.path:
@@ -184,12 +200,17 @@ def build(base_bin, look_path, slot=None, lut_path=None, index=0, gate=GATE, all
         rep.update(gate_kind="dE vs predicted", dE_web_recomputed=dw, dE_exact=de, pct_lt5_exact=pct, dE_predicted=pred["dE"], gap=diff, gate=gate)
         log("exact model on ref-syn-1: dE %.3f (web recomputed %.3f, file predicted %.3f), gap %.3f, gate %.2f" % (de, dw, pred["dE"], diff, gate))
         if diff > gate:
-            raise BuildError("the exact model scores %.3f dE, the look file predicts %.3f: %.3f > %.2f dE. Not written" % (de, pred["dE"], diff, gate))
+            raise GateRefused("the exact model scores %.3f dE, the look file predicts %.3f: %.3f > %.2f dE. Not written" % (de, pred["dE"], diff, gate),
+                              "lut", look.get("name"), mode, de, pred["dE"], gate)
     else:
         rep.update(gate_kind="web-vs-exact picture difference (no LUT / not ref-syn-1)", gap=float(mism.mean()), gate=gate)
         log("target-free gate: mean web-vs-exact difference on ref-syn-1 %.3f dE (p95 %.2f), gate %.2f" % (mism.mean(), rep["mismatch_p95"], gate))
         if mism.mean() > gate:
-            raise BuildError("the exact model differs from the browser model by %.3f dE on average (> %.2f). Not written" % (mism.mean(), gate))
+            sname = (look.get("source") or {}).get("name")
+            if lut_path is None and sname:
+                raise LutNotFound(sname, look.get("name"), float(mism.mean()), gate)
+            raise GateRefused("the exact model differs from the browser model by %.3f dE on average (> %.2f). Not written" % (mism.mean(), gate),
+                              "model", look.get("name"), mode, float(mism.mean()), None, gate)
     # ---- write + audit
     try:
         written = S.write_slot(p0, slot, L16, t3, t2)

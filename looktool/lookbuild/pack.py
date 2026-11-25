@@ -51,7 +51,7 @@ def find_lut(lut_dir, source):
     with open(p, "rb") as fh:
         sha = hashlib.sha256(fh.read()).hexdigest()
     if source.get("sha256") and source["sha256"].lower() != sha:
-        raise PackError("%s in --lut-dir has sha256 %s, the pack says %s: wrong file" % (p, sha[:12], source["sha256"][:12]))
+        raise PackError("%s (in --lut-dir / zip) has sha256 %s, the pack says %s: this is not the file the look was made from (same name, different content). Use the original, unmodified file" % (p, sha[:12], source["sha256"][:12]))
     return p
 
 
@@ -159,10 +159,14 @@ def build_pack(base_bin, pack_path, lut_dir=None, gate=B.GATE, allow_other_base=
         slot = look["slot"]
         src = look.get("source") or {}
         lut = find_lut(lut_dir, src)
-        log("--- look %d/%d: slot %d %r%s" % (i + 1, len(looks), slot, look.get("name"), "" if lut else " (no source table found: target-free gate)"))
+        log("--- look %d/%d: slot %d %r%s" % (i + 1, len(looks), slot, look.get("name"), "" if lut else " (LUT file %s not found in --lut-dir / zip: only the stricter target-free check runs)" % (src.get("name") or "?")))
         icon_keep = look.get("icon", "roll") == "keep"
-        res = B.build(cur, None, slot=slot, lut_path=lut, gate=gate, allow_other_base=True, log=log, name=look.get("name"), keep_icon=icon_keep,
-                      look_obj=(data, look, []))
+        try:
+            res = B.build(cur, None, slot=slot, lut_path=lut, gate=gate, allow_other_base=True, log=log, name=look.get("name"), keep_icon=icon_keep,
+                          look_obj=(data, look, []))
+        except B.BuildError as e:
+            e.look_name, e.slot = getattr(e, "look_name", None) or look.get("name"), slot       # which look of the pack refused (for callers that explain it)
+            raise
         cur = res["image"]
         touched[slot] = dict(res["tables"], name=look.get("name"), roll=not icon_keep)
         rep = dict(res["report"])
