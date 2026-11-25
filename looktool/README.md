@@ -21,6 +21,16 @@ writes to a camera or a card by itself. Flashing is at your own risk; keep `out/
 
 Also: `--stock OLY_E_113_1400_0000_0000.BIN --om10mi om10mi.py` instead of `--base` builds the version 94 image first.
 
+**Which file do I flash?** Only the looktool result. It already contains everything from version 94 plus your looks, so it
+replaces the `om10mi-build` image (that one is only the input). With `--card` it is written as `DIR/DCOLYMP/E1139999.BIN`,
+ready to copy to the card; without `--card`, rename `DIR/E113_PACK_TEST.BIN` to `E1139999.BIN` inside a `DCOLYMP` folder.
+
+**"REFUSED: the exact model differs from the browser model by X dE"** means the builder did not find the look's LUT, so it
+fell back to a stricter check without the LUT. Pass `--lut-dir` with the same `.cube` / `.xmp` files you used in the web page
+(same file names, unmodified: they are matched by name and checksum). The builder then scores the look against the LUT itself.
+If a look is still refused ("the exact model scores X dE, the look file predicts Y"), that LUT moves tones further than the
+camera can follow in that base mode: choose another base mode for it in the web page (it ranks them) or another slot.
+
 ## What it can do
 
 - **Replace** a look slot (1..18, not 2 = Acros) with a look fitted from your LUT. The look keeps the base picture mode of the slot
